@@ -1,5 +1,4 @@
 #!/usr/bin/env node
-import 'source-map-support/register';
 import { App, Stack, Duration } from 'aws-cdk-lib';
 // @ts-ignore
 import { AmplifyData, AmplifyDataDefinition } from '@aws-amplify/data-construct';

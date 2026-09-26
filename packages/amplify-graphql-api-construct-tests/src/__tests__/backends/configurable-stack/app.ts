@@ -1,5 +1,4 @@
 #!/usr/bin/env node
-import 'source-map-support/register';
 import * as fs from 'fs';
 import * as path from 'path';
 import { App, Aspects, CfnOutput, Duration, IAspect, RemovalPolicy, Stack, TagManager, Tags } from 'aws-cdk-lib';

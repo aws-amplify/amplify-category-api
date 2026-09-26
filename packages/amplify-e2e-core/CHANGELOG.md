@@ -3,6 +3,31 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.0.13](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-core@5.0.12...amplify-category-api-e2e-core@5.0.13) (2026-07-01)
+
+### Bug Fixes
+
+- add sa-east-1 region back to E2E test pool ([#3480](https://github.com/aws-amplify/amplify-category-api/issues/3480)) ([9a2c742](https://github.com/aws-amplify/amplify-category-api/commit/9a2c74251a2c53471326f58dab607a9e2d4ff7ea))
+
+## [5.0.12](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-core@5.0.11...amplify-category-api-e2e-core@5.0.12) (2026-05-07)
+
+### Bug Fixes
+
+- dep updates ([#3441](https://github.com/aws-amplify/amplify-category-api/issues/3441)) ([bddb2c8](https://github.com/aws-amplify/amplify-category-api/commit/bddb2c84dfb1288d45f91f852f8b48207e10aecd)), closes [#295](https://github.com/aws-amplify/amplify-category-api/issues/295) [#294](https://github.com/aws-amplify/amplify-category-api/issues/294) [#302](https://github.com/aws-amplify/amplify-category-api/issues/302) [#307-310](https://github.com/aws-amplify/amplify-category-api/issues/307-310) [#236](https://github.com/aws-amplify/amplify-category-api/issues/236) [#273-275](https://github.com/aws-amplify/amplify-category-api/issues/273-275) [#282-285](https://github.com/aws-amplify/amplify-category-api/issues/282-285) [#290](https://github.com/aws-amplify/amplify-category-api/issues/290) [#292](https://github.com/aws-amplify/amplify-category-api/issues/292)
+- stabilize E2E tests — exclude broken regions, fix Node 22 compatibility ([#3468](https://github.com/aws-amplify/amplify-category-api/issues/3468)) ([c756f3f](https://github.com/aws-amplify/amplify-category-api/commit/c756f3fc7ad5c79d37f664a1a3403c53e307bb25))
+
+## [5.0.11](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-core@5.0.10...amplify-category-api-e2e-core@5.0.11) (2026-03-24)
+
+### Bug Fixes
+
+- address all e2e test failures - credential refresh, cleanup error handling, OOM, timeouts, region assignments ([b2b0446](https://github.com/aws-amplify/amplify-category-api/commit/b2b044627fce327df5b5e4e2cc6967c3cb9f1fe9))
+- dependabots + scripting and prompting to help with dependabots ([#3417](https://github.com/aws-amplify/amplify-category-api/issues/3417)) ([fb79e92](https://github.com/aws-amplify/amplify-category-api/commit/fb79e927edeefdca9b8388f447b6fd954b1a369a))
+- **e2e:** fix e2e rds tests, conversation tests and sql tests ([#3431](https://github.com/aws-amplify/amplify-category-api/issues/3431)) ([43ef58e](https://github.com/aws-amplify/amplify-category-api/commit/43ef58e5c0867035dfc674aa1851ed13f19393d9))
+
+### Reverts
+
+- Revert "chore(release): Publish [ci skip]" ([dd1f693](https://github.com/aws-amplify/amplify-category-api/commit/dd1f693d8ad6059d6a53af117b16505f40e1e657))
+
 ## [5.0.10](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-core@5.0.9...amplify-category-api-e2e-core@5.0.10) (2026-02-05)
 
 ### Bug Fixes

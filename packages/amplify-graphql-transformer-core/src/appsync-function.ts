@@ -3,7 +3,7 @@ import { BackedDataSource, BaseDataSource, CfnFunctionConfiguration } from 'aws-
 import { Construct } from 'constructs';
 import { InlineTemplate } from './cdk-compat/template-asset';
 import { GraphQLApi } from './graphql-api';
-import { setResourceName } from './utils';
+import { addCfnResourceDependency, setResourceName } from './utils';
 import { getRuntimeSpecificFunctionProps } from './utils/function-runtime';
 
 export interface BaseFunctionConfigurationProps {
@@ -66,7 +66,7 @@ export class AppSyncFunctionConfiguration extends Construct {
     setResourceName(this.function, { name: id });
     props.api.addSchemaDependency(this.function);
     if (props.dataSource instanceof BackedDataSource) {
-      this.function.addDependency(props.dataSource?.ds);
+      addCfnResourceDependency(this.function, props.dataSource?.ds);
     }
     this.arn = this.function.attrFunctionArn;
     this.functionId = this.function.attrFunctionId;

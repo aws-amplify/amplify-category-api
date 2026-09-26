@@ -91,15 +91,26 @@ export const setRDSSNSTopicMappings = (scope: Construct, mapping: RDSSNSTopicMap
  * Returns an SSM Endpoint if needed by the current configuration, undefined otherwise. If the current configuration includes a VPC, the SSM
  * endpoint will be a VPC service endpoint, otherwise it will be the standard regionalized endpoint for the service. SSM Endpoints are
  * required if the DB connection information is stored in SSM, or if the configuration uses a custom SSL certificate.
+ * @param scope Construct
+ * @param resourceNames the SQL Lambda resource names
+ * @param sqlLambdaVpcConfig the VPC configuration for the SQL Lambda, if any
+ * @param minimizeRdsVpcEndpoints when true, only the `ssm` interface VPC endpoint is provisioned. Defaults to false, which provisions the
+ * full set (`ssm`, `ssmmessages`, `ec2`, `ec2messages`, `kms`) for backward compatibility.
  */
-export const getSsmEndpoint = (scope: Construct, resourceNames: SQLLambdaResourceNames, sqlLambdaVpcConfig?: VpcConfig): string => {
+export const getSsmEndpoint = (
+  scope: Construct,
+  resourceNames: SQLLambdaResourceNames,
+  sqlLambdaVpcConfig?: VpcConfig,
+  minimizeRdsVpcEndpoints = false,
+): string => {
   if (!sqlLambdaVpcConfig) {
     // Default, non-VPC SSM endpoint
     return Fn.join('', ['ssm.', Fn.ref('AWS::Region'), '.amazonaws.com']);
   }
 
-  // Although the Lambda function will only invoke SSM directly, internally the SDK makes calls to other services as well
-  const services = ['ssm', 'ssmmessages', 'ec2', 'ec2messages', 'kms'];
+  // Only the `ssm` endpoint is consumed at runtime to read the DB connection secret from Parameter Store. The full set is provisioned by
+  // default to preserve existing stacks; opting in to `minimizeRdsVpcEndpoints` provisions only the `ssm` endpoint.
+  const services = minimizeRdsVpcEndpoints ? ['ssm'] : ['ssm', 'ssmmessages', 'ec2', 'ec2messages', 'kms'];
   const endpoints = addVpcEndpoints(scope, sqlLambdaVpcConfig, resourceNames, services);
   const endpointEntries = endpoints.find((endpoint) => endpoint.service === 'ssm')?.endpoint.attrDnsEntries;
   if (!endpointEntries) {
@@ -115,6 +126,8 @@ export const getSsmEndpoint = (scope: Construct, resourceNames: SQLLambdaResourc
  * @param scope Construct
  * @param apiGraphql GraphQLAPIProvider
  * @param lambdaRole IRole
+ * @param minimizeRdsVpcEndpoints when true, only the `ssm` interface VPC endpoint is provisioned for the SQL Lambda's VPC. Defaults to
+ * false, which provisions the full set for backward compatibility.
  */
 export const createRdsLambda = (
   scope: Construct,
@@ -126,6 +139,7 @@ export const createRdsLambda = (
   environment?: { [key: string]: string },
   sqlLambdaVpcConfig?: VpcConfig,
   sqlLambdaProvisionedConcurrencyConfig?: ProvisionedConcurrencyConfig,
+  minimizeRdsVpcEndpoints = false,
 ): IFunction => {
   const lambdaEnvironment = {
     ...environment,
@@ -134,7 +148,7 @@ export const createRdsLambda = (
   if (credentialStorageMethod === CredentialStorageMethod.SSM) {
     lambdaEnvironment.CREDENTIAL_STORAGE_METHOD = CredentialStorageMethod.SSM;
     if (!lambdaEnvironment.SSM_ENDPOINT) {
-      lambdaEnvironment.SSM_ENDPOINT = getSsmEndpoint(scope, resourceNames, sqlLambdaVpcConfig);
+      lambdaEnvironment.SSM_ENDPOINT = getSsmEndpoint(scope, resourceNames, sqlLambdaVpcConfig, minimizeRdsVpcEndpoints);
     }
   } else if (credentialStorageMethod === CredentialStorageMethod.SECRETS_MANAGER) {
     // Default Secrets Manager endpoint

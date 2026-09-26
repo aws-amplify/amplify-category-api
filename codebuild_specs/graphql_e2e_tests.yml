@@ -18,3 +18,13 @@ phases:
     commands:
       - aws sts get-caller-identity
       - source ./shared-scripts.sh && _scanArtifacts
+      # Always emit a non-empty primary artifact so this shard can be a depend-on
+      # predecessor in the e2e wave chain (see scripts/split-e2e-tests.ts).
+      # CodeBuild fails a dependent build when its dependency's primary artifact
+      # is missing or empty.
+      - mkdir -p $CODEBUILD_SRC_DIR/packages/graphql-transformers-e2e-tests/amplify-e2e-reports && echo "gql_e2e_tests complete" > $CODEBUILD_SRC_DIR/packages/graphql-transformers-e2e-tests/amplify-e2e-reports/wave-marker.txt
+
+artifacts:
+  files:
+    - '**/*'
+  base-directory: $CODEBUILD_SRC_DIR/packages/graphql-transformers-e2e-tests/amplify-e2e-reports

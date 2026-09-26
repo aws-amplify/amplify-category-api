@@ -1,5 +1,4 @@
 #!/usr/bin/env node
-import 'source-map-support/register';
 import { App, Stack, Duration, RemovalPolicy, CfnOutput } from 'aws-cdk-lib';
 import { Role, PolicyDocument, PolicyStatement, ServicePrincipal, Effect } from 'aws-cdk-lib/aws-iam';
 import { UserPool, UserPoolClient } from 'aws-cdk-lib/aws-cognito';

@@ -22,7 +22,7 @@ import { Construct } from 'constructs';
 import { LogRetention, RetentionDays } from 'aws-cdk-lib/aws-logs';
 import { TransformerSchema } from './cdk-compat/schema-asset';
 import { DefaultTransformHost } from './transform-host';
-import { setResourceName } from './utils';
+import { addCfnResourceDependency, setResourceName } from './utils';
 
 export interface GraphqlApiProps {
   /**
@@ -194,7 +194,7 @@ export class GraphQLApi extends GraphqlApiBase implements GraphQLAPIProvider {
         (mode: AuthorizationMode) => mode.authorizationType === AuthorizationType.API_KEY && mode.apiKeyConfig,
       )?.apiKeyConfig;
       this.apiKeyResource = this.createAPIKey(config);
-      this.apiKeyResource.addDependency(this.schemaResource);
+      addCfnResourceDependency(this.apiKeyResource, this.schemaResource);
       this.apiKey = this.apiKeyResource.attrApiKey;
     }
 
@@ -297,7 +297,7 @@ export class GraphQLApi extends GraphqlApiBase implements GraphQLAPIProvider {
   }
 
   public addSchemaDependency(construct: CfnResource): boolean {
-    construct.addDependency(this.schemaResource);
+    addCfnResourceDependency(construct, this.schemaResource);
     return true;
   }
 

@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.1.16](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-conversation-transformer@1.1.15...@aws-amplify/graphql-conversation-transformer@1.1.16) (2026-07-13)
+
+### Bug Fixes
+
+- resolve high dependabot vulnerabilities ([#3505](https://github.com/aws-amplify/amplify-category-api/issues/3505)) ([ebaf1e0](https://github.com/aws-amplify/amplify-category-api/commit/ebaf1e03f4347d2abe66974dd407e57b53358414))
+
+## [1.1.15](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-conversation-transformer@1.1.14...@aws-amplify/graphql-conversation-transformer@1.1.15) (2026-07-01)
+
+### Bug Fixes
+
+- **conversation:** allow optional 'type' field on AmplifyAIToolUseBlockInput (ai-constructs sends SDK ToolUseBlock.type) ([227dd7e](https://github.com/aws-amplify/amplify-category-api/commit/227dd7e691460257142f3def13d8db17cf383ba6))
+- resolve all HIGH/CRITICAL vulnerabilities across all lockfiles ([222f10e](https://github.com/aws-amplify/amplify-category-api/commit/222f10ec2c6922aaedec3fb77fe03e58b0fca15c))
+
+## [1.1.14](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-conversation-transformer@1.1.13...@aws-amplify/graphql-conversation-transformer@1.1.14) (2026-03-24)
+
+### Reverts
+
+- Revert "chore(release): Publish [ci skip]" ([dd1f693](https://github.com/aws-amplify/amplify-category-api/commit/dd1f693d8ad6059d6a53af117b16505f40e1e657))
+
 ## [1.1.13](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-conversation-transformer@1.1.12...@aws-amplify/graphql-conversation-transformer@1.1.13) (2026-02-05)
 
 **Note:** Version bump only for package @aws-amplify/graphql-conversation-transformer

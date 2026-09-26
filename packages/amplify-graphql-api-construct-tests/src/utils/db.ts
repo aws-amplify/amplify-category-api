@@ -7,6 +7,9 @@ export const dbDetailsToModelDataSourceStrategy = (
   dbType: ModelDataSourceStrategySqlDbType,
   connectionConfigsKey?: string,
 ): SQLLambdaModelDataSourceStrategy => {
+  if (!dbDetails) {
+    throw new Error('dbDetails is undefined. Database setup may have failed in beforeAll. Check earlier test output for errors.');
+  }
   const dbConnectionConfig = connectionConfigsKey
     ? dbDetails.connectionConfigs[connectionConfigsKey]
     : Object.values(dbDetails.connectionConfigs)[0];

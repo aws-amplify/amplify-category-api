@@ -21,7 +21,7 @@
     "ini": "^3.0.1",
     "jest-dev-server": "~9.0.1",
     "jest-junit": "^14.0.1",
-    "lodash": "^4.17.21",
+    "lodash": "^4.17.23",
     "node-pty": "^1.0.0",
     "node-gyp": "^11.0.0",
     "pluralize": "^8.0.0",

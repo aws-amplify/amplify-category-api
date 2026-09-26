@@ -1,6 +1,6 @@
 #!/bin/bash
 
-AMPLIFY_NODE_VERSION=24.12.0
+AMPLIFY_NODE_VERSION=22
 
 # set exit on error to true
 set -e
@@ -191,6 +191,49 @@ function _verifyAmplifyBackendCompatability {
   npm update
   # Verify that the package-lock.json contains the updated version with localhost tarballs
   git diff package-lock.json | grep -Pz '@aws-amplify\/(graphql-api-construct|data-construct)[\s\S]*localhost:4873[\s\S]*tgz'
+
+  # Verify bundled dependency completeness (regression test for #3158)
+  # Check that bundledDependencies includes all transitive deps of bundled packages
+  echo "Verifying bundled dependency completeness..."
+  node -e "
+const path = require('path');
+const fs = require('fs');
+
+const constructs = [
+  'node_modules/@aws-amplify/data-construct',
+  'node_modules/@aws-amplify/graphql-api-construct'
+];
+const exclude = new Set(['aws-cdk-lib', 'constructs', '@aws-cdk/toolkit-lib']);
+
+let missing = [];
+for (const constructPath of constructs) {
+  if (!fs.existsSync(constructPath)) continue;
+  const pkg = JSON.parse(fs.readFileSync(path.join(constructPath, 'package.json'), 'utf8'));
+  const bundled = new Set(pkg.bundledDependencies || []);
+  const nm = path.join(constructPath, 'node_modules');
+  if (!fs.existsSync(nm)) continue;
+
+  for (const dep of bundled) {
+    const depPkgPath = path.join(nm, dep, 'package.json');
+    if (!fs.existsSync(depPkgPath)) continue;
+    const depJson = JSON.parse(fs.readFileSync(depPkgPath, 'utf8'));
+    for (const transitive of Object.keys(depJson.dependencies || {})) {
+      if (!bundled.has(transitive) && !exclude.has(transitive)) {
+        missing.push(pkg.name + ': ' + dep + ' requires ' + transitive + ' (not bundled)');
+      }
+    }
+  }
+}
+
+if (missing.length > 0) {
+  console.error('ERROR: Missing bundled transitive dependencies:');
+  missing.forEach(m => console.error('  ' + m));
+  process.exit(1);
+} else {
+  console.log('All bundled transitive dependencies are present.');
+}
+"
+
   # Build and test the backend
   npm run build && npm run test
 
@@ -281,6 +324,24 @@ function _generateChangeLog {
     # copy [changelog] to s3
     storeCacheFile $CODEBUILD_SRC_DIR/UNIFIED_CHANGELOG.md UNIFIED_CHANGELOG.md
 }
+function retry_with_backoff {
+    local max_attempts=$1
+    shift
+    local attempt=1
+    while [ $attempt -le $max_attempts ]; do
+        if "$@"; then
+            return 0
+        fi
+        if [ $attempt -eq $max_attempts ]; then
+            break
+        fi
+        echo "Attempt $attempt/$max_attempts failed. Retrying in $((attempt * 15)) seconds..."
+        sleep $((attempt * 15))
+        attempt=$((attempt + 1))
+    done
+    echo "All $max_attempts attempts failed for: $*"
+    return 1
+}
 function _installCLIFromLocalRegistry {
     echo "Start verdaccio, install CLI"
     source codebuild_specs/scripts/local_publish_helpers.sh
@@ -293,7 +354,7 @@ function _installCLIFromLocalRegistry {
     npm config set fetch-retry-mintimeout 40000
     npm config set fetch-retry-maxtimeout 240000
     npm config set maxsockets 1
-    npm install -g @aws-amplify/cli-internal
+    retry_with_backoff 3 npm install -g @aws-amplify/cli-internal
     echo "using Amplify CLI version: "$(amplify --version)
     npm list -g --depth=1 | grep -e '@aws-amplify/amplify-category-api' -e 'amplify-codegen'
     unsetNpmRegistryUrl
@@ -316,8 +377,7 @@ function _setupE2ETestsLinux {
     echo "Setup E2E Tests Linux"
     loadCacheFromBuildJob
     loadCache verdaccio-cache $CODEBUILD_SRC_DIR/../verdaccio-cache
-    # Ignore engines while we're still on Node 18.x
-    yarn config set ignore-engines true
+    _setupNodeVersion $AMPLIFY_NODE_VERSION
     _installCLIFromLocalRegistry
     _loadTestAccountCredentials
     _setShell
@@ -327,6 +387,7 @@ function _setupCDKTestsLinux {
     echo "Setup E2E Tests Linux"
     loadCacheFromBuildJob
     loadCache verdaccio-cache $CODEBUILD_SRC_DIR/../verdaccio-cache
+    _setupNodeVersion $AMPLIFY_NODE_VERSION
     _installCLIFromLocalRegistry
     yarn package
     _loadTestAccountCredentials
@@ -524,6 +585,7 @@ function runE2eTest {
 
 function runCDKTest {
     FAILED_TEST_REGEX_FILE="./amplify-e2e-reports/amplify-e2e-failed-test.txt"
+    CDK_MAX_WORKERS=${MAX_WORKERS:-5}
 
     if [ -z "$FIRST_RUN" ] || [ "$FIRST_RUN" == "true" ]; then
         cd $(pwd)/packages/amplify-graphql-api-construct-tests
@@ -532,9 +594,9 @@ function runCDKTest {
     if [ -f  $FAILED_TEST_REGEX_FILE ]; then
         # read the content of failed tests
         failedTests=$(<$FAILED_TEST_REGEX_FILE)
-        yarn run e2e --maxWorkers=5 $TEST_SUITE -t "$failedTests"
+        yarn run e2e --maxWorkers=$CDK_MAX_WORKERS $TEST_SUITE -t "$failedTests"
     else
-        yarn run e2e --maxWorkers=5 $TEST_SUITE
+        yarn run e2e --maxWorkers=$CDK_MAX_WORKERS $TEST_SUITE
     fi
 }
 

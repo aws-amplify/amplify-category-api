@@ -386,8 +386,8 @@ export const setupRDSInstanceAndData = async (
       ),
     );
 
-    console.log('Waiting for the security rules to be disabled');
-    await sleep(1 * 60 * 1000);
+    console.log('Waiting for the security rules to take effect');
+    await sleep(5 * 60 * 1000);
   }
 
   return dbConfig;
@@ -576,8 +576,9 @@ export const clearTestDataUsingDirectConnection = async (config: RDSConfig, endp
       }),
     ),
   );
-  console.log('Waiting for the security rules to be disabled');
-  await sleep(1 * 60 * 1000);
+
+  console.log('Waiting for the security rules to take effect');
+  await sleep(5 * 60 * 1000);
 
   console.log(`[MySQL] Database [${config.dbname}] - data cleared and all tables truncated`);
 };

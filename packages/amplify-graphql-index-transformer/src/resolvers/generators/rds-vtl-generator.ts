@@ -1,4 +1,10 @@
 import { TransformerContextProvider, TransformerResolverProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import {
+  constructAuthFilterStatement,
+  constructNonScalarFieldsStatement,
+  constructArrayFieldsStatement,
+  constructFieldMappingInput,
+} from '@aws-amplify/graphql-transformer-core';
 import { Expression, printBlock, compoundExpression, set, ref, list, qref, methodCall, str, obj } from 'graphql-mapping-template';
 import _ from 'lodash';
 import { IndexDirectiveConfiguration, PrimaryKeyDirectiveConfiguration } from '../../types';
@@ -22,13 +28,10 @@ export class RDSIndexVTLGenerator implements IndexVTLGenerator {
         set(ref('lambdaInput.operationName'), str(operationName)),
         set(ref('lambdaInput.args.metadata'), obj({})),
         set(ref('lambdaInput.args.metadata.keys'), list([])),
-        set(ref('lambdaInput.args.metadata.fieldMap'), obj({})),
-        qref(
-          methodCall(
-            ref('lambdaInput.args.metadata.fieldMap.putAll'),
-            methodCall(ref('util.defaultIfNull'), ref('context.stash.fieldMap'), obj({})),
-          ),
-        ),
+        constructAuthFilterStatement('lambdaInput.args.metadata.authFilter'),
+        constructNonScalarFieldsStatement(tableName, ctx),
+        constructArrayFieldsStatement(tableName, ctx),
+        constructFieldMappingInput(),
         qref(
           methodCall(ref('lambdaInput.args.metadata.keys.addAll'), methodCall(ref('util.defaultIfNull'), ref('ctx.stash.keys'), list([]))),
         ),

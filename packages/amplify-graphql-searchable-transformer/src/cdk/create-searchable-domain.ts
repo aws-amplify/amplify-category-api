@@ -1,6 +1,6 @@
 import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { EbsDeviceVolumeType } from 'aws-cdk-lib/aws-ec2';
-import { CfnDomain, Domain, ElasticsearchVersion } from 'aws-cdk-lib/aws-elasticsearch';
+import { CfnDomain, Domain, ElasticsearchVersion, TLSSecurityPolicy } from 'aws-cdk-lib/aws-elasticsearch';
 import { IRole, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import { CfnParameter, Fn, RemovalPolicy } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
@@ -24,6 +24,7 @@ export const createSearchableDomain = (
   const domain = new Domain(stack, OpenSearchDomainLogicalID, {
     version: { version: '7.10' } as ElasticsearchVersion,
     enforceHttps: true,
+    tlsSecurityPolicy: TLSSecurityPolicy.TLS_1_2,
     ebs: {
       enabled: true,
       volumeType: EbsDeviceVolumeType.GP2,

@@ -3,6 +3,62 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.16.6](https://github.com/aws-amplify/amplify-category-api/compare/amplify-graphql-api-construct-tests@1.16.5...amplify-graphql-api-construct-tests@1.16.6) (2026-07-13)
+
+**Note:** Version bump only for package amplify-graphql-api-construct-tests
+
+## [1.16.5](https://github.com/aws-amplify/amplify-category-api/compare/amplify-graphql-api-construct-tests@1.16.4...amplify-graphql-api-construct-tests@1.16.5) (2026-07-13)
+
+**Note:** Version bump only for package amplify-graphql-api-construct-tests
+
+## [1.16.4](https://github.com/aws-amplify/amplify-category-api/compare/amplify-graphql-api-construct-tests@1.16.3...amplify-graphql-api-construct-tests@1.16.4) (2026-07-13)
+
+### Bug Fixes
+
+- resolve high dependabot vulnerabilities ([#3505](https://github.com/aws-amplify/amplify-category-api/issues/3505)) ([ebaf1e0](https://github.com/aws-amplify/amplify-category-api/commit/ebaf1e03f4347d2abe66974dd407e57b53358414))
+
+## [1.16.3](https://github.com/aws-amplify/amplify-category-api/compare/amplify-graphql-api-construct-tests@1.16.2...amplify-graphql-api-construct-tests@1.16.3) (2026-07-01)
+
+### Bug Fixes
+
+- **conversation:** allow optional 'type' field on AmplifyAIToolUseBlockInput (ai-constructs sends SDK ToolUseBlock.type) ([227dd7e](https://github.com/aws-amplify/amplify-category-api/commit/227dd7e691460257142f3def13d8db17cf383ba6))
+- upgrade AWS SDK clients to eliminate fast-xml-parser vulnerabilities ([9261998](https://github.com/aws-amplify/amplify-category-api/commit/92619981d2cf15351a89ebb4b4f85ea45d6c3f65))
+
+## [1.16.2](https://github.com/aws-amplify/amplify-category-api/compare/amplify-graphql-api-construct-tests@1.16.1...amplify-graphql-api-construct-tests@1.16.2) (2026-05-07)
+
+### Bug Fixes
+
+- dep updates ([#3441](https://github.com/aws-amplify/amplify-category-api/issues/3441)) ([bddb2c8](https://github.com/aws-amplify/amplify-category-api/commit/bddb2c84dfb1288d45f91f852f8b48207e10aecd)), closes [#295](https://github.com/aws-amplify/amplify-category-api/issues/295) [#294](https://github.com/aws-amplify/amplify-category-api/issues/294) [#302](https://github.com/aws-amplify/amplify-category-api/issues/302) [#307-310](https://github.com/aws-amplify/amplify-category-api/issues/307-310) [#236](https://github.com/aws-amplify/amplify-category-api/issues/236) [#273-275](https://github.com/aws-amplify/amplify-category-api/issues/273-275) [#282-285](https://github.com/aws-amplify/amplify-category-api/issues/282-285) [#290](https://github.com/aws-amplify/amplify-category-api/issues/290) [#292](https://github.com/aws-amplify/amplify-category-api/issues/292)
+
+## [1.16.1](https://github.com/aws-amplify/amplify-category-api/compare/amplify-graphql-api-construct-tests@1.16.0...amplify-graphql-api-construct-tests@1.16.1) (2026-04-13)
+
+**Note:** Version bump only for package amplify-graphql-api-construct-tests
+
+# [1.16.0](https://github.com/aws-amplify/amplify-category-api/compare/amplify-graphql-api-construct-tests@1.15.0...amplify-graphql-api-construct-tests@1.16.0) (2026-03-24)
+
+### Bug Fixes
+
+- add credential refresh to migration/deploy-velocity tests, rebalance e2e workflow batches ([45c9ce0](https://github.com/aws-amplify/amplify-category-api/commit/45c9ce075254516cef22223fc44d83c918a7c926))
+- address all e2e test failures - credential refresh, cleanup error handling, OOM, timeouts, region assignments ([b2b0446](https://github.com/aws-amplify/amplify-category-api/commit/b2b044627fce327df5b5e4e2cc6967c3cb9f1fe9))
+- bump deploy velocity thresholds and test timeouts for flaky GSI tests ([a7a8717](https://github.com/aws-amplify/amplify-category-api/commit/a7a871704896f416a46a5525ade47490383de5f9))
+- bump single-gsi-single-record deploy velocity threshold to 20 minutes ([ba2fb3d](https://github.com/aws-amplify/amplify-category-api/commit/ba2fb3db5cb1403ad9276bb70b2826ce940cf497))
+- comprehensive e2e reliability improvements ([a0d71e2](https://github.com/aws-amplify/amplify-category-api/commit/a0d71e2e1b3fb20b7ffe1a1a5b72655179d1f6c8))
+- **e2e:** add credential refresh to long-running tests to prevent ExpiredToken failures ([300b453](https://github.com/aws-amplify/amplify-category-api/commit/300b453c7f1cb696807a14b094d04dc16364a53a))
+- **e2e:** fix e2e rds tests, conversation tests and sql tests ([#3431](https://github.com/aws-amplify/amplify-category-api/issues/3431)) ([43ef58e](https://github.com/aws-amplify/amplify-category-api/commit/43ef58e5c0867035dfc674aa1851ed13f19393d9))
+- increase cdkDeploy noOutputTimeout for amplify-table-1 GSI update ([3390b13](https://github.com/aws-amplify/amplify-category-api/commit/3390b13c9afbd2d63d8ec1993561dbece363650a))
+- increase cdkDeploy noOutputTimeout for amplify-table-5 GSI replacement ([5399866](https://github.com/aws-amplify/amplify-category-api/commit/53998668879058d2e4c1e7b5da79e4bc39f477f9))
+- run prettier on amplify-table test files ([04b5928](https://github.com/aws-amplify/amplify-category-api/commit/04b59288c5c75dbe6434fcb6a50f434ef9590ceb))
+- separate cdkDestroy and clearDatabase error handling to prevent data leaks between test suites ([44cbbf1](https://github.com/aws-amplify/amplify-category-api/commit/44cbbf1a0814e634e4f284656bf3d670926e6354))
+
+### Features
+
+- restore region rebalancing, increase cdkDeploy/cdkDestroy default no-output timeout to 15 min ([ffb5dd2](https://github.com/aws-amplify/amplify-category-api/commit/ffb5dd29f97dcf1de485fe5f3bccc3d5dffb6bc0))
+
+### Reverts
+
+- Revert "chore(release): Publish [ci skip]" ([dd1f693](https://github.com/aws-amplify/amplify-category-api/commit/dd1f693d8ad6059d6a53af117b16505f40e1e657))
+- remove DURATION_35_MINUTES and custom timeout overrides for amplify-table-5 and replace-2-gsis ([3522225](https://github.com/aws-amplify/amplify-category-api/commit/352222575857ed5494edcc1d8295b3be70f51355))
+
 # [1.15.0](https://github.com/aws-amplify/amplify-category-api/compare/amplify-graphql-api-construct-tests@1.14.5...amplify-graphql-api-construct-tests@1.15.0) (2026-02-05)
 
 ### Features

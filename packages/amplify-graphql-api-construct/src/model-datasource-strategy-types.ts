@@ -87,6 +87,16 @@ export interface SQLLambdaModelDataSourceStrategy {
   readonly vpcConfiguration?: VpcConfig;
 
   /**
+   * Opt-in optimization that minimizes the interface VPC endpoints provisioned for this SQL data source's Lambda. When enabled, only the
+   * `ssm` interface VPC endpoint - the sole endpoint the SQL Lambda consumes at runtime to read the database connection secret - is
+   * provisioned. When disabled (the default), the full set of endpoints (`ssm`, `ssmmessages`, `ec2`, `ec2messages`, `kms`) is provisioned,
+   * preserving the existing behavior. This setting only takes effect when `vpcConfiguration` is set; it has no effect for SQL data sources
+   * that are not installed into a VPC.
+   * @default false
+   */
+  readonly minimizeRdsVpcEndpoints?: boolean;
+
+  /**
    * Custom SQL statements. The key is the value of the `references` attribute of the `@sql` directive in the `schema`; the value is the SQL
    * to be executed.
    */

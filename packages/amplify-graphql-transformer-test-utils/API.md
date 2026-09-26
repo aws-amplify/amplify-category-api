@@ -86,6 +86,8 @@ export interface MakeSqlDataSourceStrategyOptions {
     // (undocumented)
     dbType?: ModelDataSourceStrategySqlDbType;
     // (undocumented)
+    minimizeRdsVpcEndpoints?: boolean;
+    // (undocumented)
     name?: string;
     // (undocumented)
     sqlLambdaProvisionedConcurrencyConfig?: ProvisionedConcurrencyConfig;

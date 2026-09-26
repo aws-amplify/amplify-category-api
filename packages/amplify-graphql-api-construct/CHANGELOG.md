@@ -3,6 +3,58 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.22.2](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-api-construct@1.22.1...@aws-amplify/graphql-api-construct@1.22.2) (2026-07-13)
+
+**Note:** Version bump only for package @aws-amplify/graphql-api-construct
+
+## [1.22.1](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-api-construct@1.22.0...@aws-amplify/graphql-api-construct@1.22.1) (2026-07-13)
+
+**Note:** Version bump only for package @aws-amplify/graphql-api-construct
+
+# [1.22.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-api-construct@1.21.4...@aws-amplify/graphql-api-construct@1.22.0) (2026-07-13)
+
+### Bug Fixes
+
+- **construct:** re-pin @aws-sdk/\* exact and collapse [@smithy](https://github.com/smithy) dedupe (58k → ~15k files) ([#3508](https://github.com/aws-amplify/amplify-category-api/issues/3508)) ([51fa6e5](https://github.com/aws-amplify/amplify-category-api/commit/51fa6e5a33b24bf2964a0d33479091730f14f3f0))
+- resolve high dependabot vulnerabilities ([#3505](https://github.com/aws-amplify/amplify-category-api/issues/3505)) ([ebaf1e0](https://github.com/aws-amplify/amplify-category-api/commit/ebaf1e03f4347d2abe66974dd407e57b53358414))
+
+### Features
+
+- add opt-in minimizeRdsVpcEndpoints to the SQL data source strategy ([#3449](https://github.com/aws-amplify/amplify-category-api/issues/3449)) ([6693c8f](https://github.com/aws-amplify/amplify-category-api/commit/6693c8f12c970e3e82cd8ab4b7acf36b0308bf87))
+
+## [1.21.4](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-api-construct@1.21.3...@aws-amplify/graphql-api-construct@1.21.4) (2026-07-01)
+
+### Bug Fixes
+
+- bump @aws-sdk/\* to 3.1074 release line, drop fast-xml-parser from constructs ([c623727](https://github.com/aws-amplify/amplify-category-api/commit/c623727d80bb8fe797f1029af372a1e7bcdb0abe))
+- bump @aws-sdk/xml-builder, @opentelemetry/core, uuid for security advisories ([23d0396](https://github.com/aws-amplify/amplify-category-api/commit/23d03961737ec4526732725ab4acd2f2eda55150)), closes [aws-sdk-js-v3#7863](https://github.com/aws-sdk-js-v3/issues/7863)
+- bundle util-format-url, middleware-sdk-s3, util-arn-parser for construct completeness ([fc78049](https://github.com/aws-amplify/amplify-category-api/commit/fc780497acb836d4c022798223e9b8103cfa8e5f))
+- declare new fast-xml-parser/aws-sdk transitive deps in constructs and update license disclaimer ([54ad56a](https://github.com/aws-amplify/amplify-category-api/commit/54ad56a425cd8cee934795d9f0efb3e30a269679))
+- resolve all HIGH/CRITICAL vulnerabilities across all lockfiles ([222f10e](https://github.com/aws-amplify/amplify-category-api/commit/222f10ec2c6922aaedec3fb77fe03e58b0fca15c))
+- upgrade AWS SDK clients to eliminate fast-xml-parser vulnerabilities ([9261998](https://github.com/aws-amplify/amplify-category-api/commit/92619981d2cf15351a89ebb4b4f85ea45d6c3f65))
+
+## [1.21.3](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-api-construct@1.21.2...@aws-amplify/graphql-api-construct@1.21.3) (2026-05-07)
+
+### Bug Fixes
+
+- add missing transitive bundled dependencies to construct packages ([#3473](https://github.com/aws-amplify/amplify-category-api/issues/3473)) ([abe1ac7](https://github.com/aws-amplify/amplify-category-api/commit/abe1ac73f9cd8e124292f70cae39eef15aa10995)), closes [aws-amplify/amplify-backend#3158](https://github.com/aws-amplify/amplify-backend/issues/3158) [aws-amplify/amplify-backend#3158](https://github.com/aws-amplify/amplify-backend/issues/3158)
+- dep updates ([#3441](https://github.com/aws-amplify/amplify-category-api/issues/3441)) ([bddb2c8](https://github.com/aws-amplify/amplify-category-api/commit/bddb2c84dfb1288d45f91f852f8b48207e10aecd)), closes [#295](https://github.com/aws-amplify/amplify-category-api/issues/295) [#294](https://github.com/aws-amplify/amplify-category-api/issues/294) [#302](https://github.com/aws-amplify/amplify-category-api/issues/302) [#307-310](https://github.com/aws-amplify/amplify-category-api/issues/307-310) [#236](https://github.com/aws-amplify/amplify-category-api/issues/236) [#273-275](https://github.com/aws-amplify/amplify-category-api/issues/273-275) [#282-285](https://github.com/aws-amplify/amplify-category-api/issues/282-285) [#290](https://github.com/aws-amplify/amplify-category-api/issues/290) [#292](https://github.com/aws-amplify/amplify-category-api/issues/292)
+
+## [1.21.2](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-api-construct@1.21.1...@aws-amplify/graphql-api-construct@1.21.2) (2026-04-13)
+
+**Note:** Version bump only for package @aws-amplify/graphql-api-construct
+
+## [1.21.1](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-api-construct@1.21.0...@aws-amplify/graphql-api-construct@1.21.1) (2026-03-24)
+
+### Bug Fixes
+
+- address dependabot security alerts ([#3432](https://github.com/aws-amplify/amplify-category-api/issues/3432)) ([6ec1862](https://github.com/aws-amplify/amplify-category-api/commit/6ec1862d459867ee29947271ceafaed1774b072d))
+- dependabots + scripting and prompting to help with dependabots ([#3417](https://github.com/aws-amplify/amplify-category-api/issues/3417)) ([fb79e92](https://github.com/aws-amplify/amplify-category-api/commit/fb79e927edeefdca9b8388f447b6fd954b1a369a))
+
+### Reverts
+
+- Revert "chore(release): Publish [ci skip]" ([dd1f693](https://github.com/aws-amplify/amplify-category-api/commit/dd1f693d8ad6059d6a53af117b16505f40e1e657))
+
 # [1.21.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-api-construct@1.20.3...@aws-amplify/graphql-api-construct@1.21.0) (2026-02-05)
 
 ### Features

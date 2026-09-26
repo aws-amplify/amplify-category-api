@@ -1,5 +1,4 @@
 #!/usr/bin/env node
-import 'source-map-support/register';
 import { App, Stack, CfnOutput, Duration, RemovalPolicy } from 'aws-cdk-lib';
 // @ts-ignore
 import {

@@ -329,6 +329,39 @@ test('@index with multiple sort keys adds a query field and GSI correctly', () =
   expect(queryField.arguments[5].type.name.value).toEqual('String');
 });
 
+test('@index query field filter input type name is PascalCased for a lowercase-first model name (issue #3267)', () => {
+  const inputSchema = `
+    type userPrivateSyncItem @model {
+      id: ID!
+      dataType: String! @index(name: "byDataType", queryField: "userPrivateSyncItemsByDataType")
+    }`;
+  const out = testTransform({
+    schema: inputSchema,
+    transformers: [new ModelTransformer(), new IndexTransformer()],
+  });
+  const schema = parse(out.schema);
+
+  validateModelSchema(schema);
+
+  const expectedFilterName = 'ModelUserPrivateSyncItemFilterInput';
+  const queryType = schema.definitions.find((def: any) => def.name && def.name.value === 'Query') as any;
+
+  const listField = queryType.fields.find((f: any) => f.name && f.name.value === 'listUserPrivateSyncItems');
+  const listFilterArg = listField.arguments.find((a: any) => a.name.value === 'filter');
+  expect(listFilterArg.type.name.value).toEqual(expectedFilterName);
+
+  const queryField = queryType.fields.find((f: any) => f.name && f.name.value === 'userPrivateSyncItemsByDataType');
+  const gsiFilterArg = queryField.arguments.find((a: any) => a.name.value === 'filter');
+  // Before the fix this was 'ModeluserPrivateSyncItemFilterInput', mismatching the client-sent variable type.
+  expect(gsiFilterArg.type.name.value).toEqual(expectedFilterName);
+
+  const filterInputNames = schema.definitions
+    .filter((def: any) => def.kind === 'InputObjectTypeDefinition' && /PrivateSyncItemFilterInput$/.test(def.name.value))
+    .map((def: any) => def.name.value);
+  expect(filterInputNames).toContain(expectedFilterName);
+  expect(filterInputNames).not.toContain('ModeluserPrivateSyncItemFilterInput');
+});
+
 test('@index with a single sort key adds a query field and GSI correctly', () => {
   const inputSchema = `
     type Test @model {
@@ -1479,6 +1512,8 @@ describe('Index query resolver creation', () => {
       },
       output: {
         getQueryTypeName: jest.fn().mockReturnValue('Query'),
+        getObject: jest.fn().mockReturnValue(undefined),
+        getTypeDefinitionsOfKind: jest.fn().mockReturnValue([]),
       },
       resolvers: {
         generateQueryResolver: jest.fn().mockReturnValue(mockResolver),
@@ -1500,6 +1535,30 @@ describe('Index query resolver creation', () => {
       synthParameters: {},
     };
   };
+});
+
+describe('RDS index query template includes authFilter', () => {
+  it('generates VTL that forwards ctx.stash.authFilter to the SQL Lambda payload', () => {
+    const { RDSIndexVTLGenerator } = require('../resolvers/generators/rds-vtl-generator');
+    const generator = new RDSIndexVTLGenerator();
+    const mockCtx: any = {
+      resourceHelper: {
+        getModelNameMapping: jest.fn().mockReturnValue('customer'),
+      },
+      output: {
+        getObject: jest.fn().mockReturnValue(undefined),
+        getTypeDefinitionsOfKind: jest.fn().mockReturnValue([]),
+      },
+    };
+    const vtl = generator.generateIndexQueryRequestTemplate(
+      { name: 'byRep', queryField: 'listByRep' } as any,
+      mockCtx,
+      'Customer',
+      'listByRep',
+    );
+    expect(vtl).toContain('$ctx.stash.authFilter');
+    expect(vtl).toContain('lambdaInput.args.metadata.authFilter');
+  });
 });
 
 describe('auth', () => {

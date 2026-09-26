@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.1.3](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-index-transformer@3.1.2...@aws-amplify/graphql-index-transformer@3.1.3) (2026-07-13)
+
+**Note:** Version bump only for package @aws-amplify/graphql-index-transformer
+
+## [3.1.2](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-index-transformer@3.1.1...@aws-amplify/graphql-index-transformer@3.1.2) (2026-07-01)
+
+### Bug Fixes
+
+- forward authFilter in RDS index query to prevent cross-tenant data exposure ([bfd5bf7](https://github.com/aws-amplify/amplify-category-api/commit/bfd5bf7141ec951532c807c26d7e280e66d80fc2))
+
+## [3.1.1](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-index-transformer@3.1.0...@aws-amplify/graphql-index-transformer@3.1.1) (2026-03-24)
+
+### Reverts
+
+- Revert "chore(release): Publish [ci skip]" ([dd1f693](https://github.com/aws-amplify/amplify-category-api/commit/dd1f693d8ad6059d6a53af117b16505f40e1e657))
+
 # [3.1.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-index-transformer@3.0.19...@aws-amplify/graphql-index-transformer@3.1.0) (2026-02-05)
 
 ### Features

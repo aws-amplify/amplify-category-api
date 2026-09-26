@@ -33,7 +33,7 @@ import {
   toUpper,
   wrapNonNull,
 } from 'graphql-transformer-common';
-import { getSortKeyFieldNames, getSubscriptionFilterInputName } from '@aws-amplify/graphql-transformer-core';
+import { getFilterInputName, getSortKeyFieldNames, getSubscriptionFilterInputName } from '@aws-amplify/graphql-transformer-core';
 import { WritableDraft } from 'immer/dist/types/types-external';
 import {
   BelongsToDirectiveConfiguration,
@@ -451,7 +451,7 @@ const getFilterConnectionInputFieldsWithConnectionField = (
 const makeModelConnectionField = (config: HasManyDirectiveConfiguration): FieldDefinitionNode => {
   const { field, fields, indexName, relatedType, relatedTypeIndex } = config;
   const args = [
-    makeInputValueDefinition('filter', makeNamedType(ModelResourceIDs.ModelFilterInputTypeName(relatedType.name.value))),
+    makeInputValueDefinition('filter', makeNamedType(getFilterInputName(relatedType.name.value))),
     makeInputValueDefinition('sortDirection', makeNamedType('ModelSortDirection')),
     makeInputValueDefinition('limit', makeNamedType('Int')),
     makeInputValueDefinition('nextToken', makeNamedType('String')),
@@ -493,7 +493,7 @@ const makeModelXFilterInputObject = (
   ctx: TransformerContextProvider,
 ): InputObjectTypeDefinitionNode => {
   const { relatedType } = config;
-  const name = ModelResourceIDs.ModelFilterInputTypeName(relatedType.name.value);
+  const name = getFilterInputName(relatedType.name.value);
   const fields = relatedType
     .fields!.filter((field: FieldDefinitionNode) => {
       const fieldType = ctx.output.getType(getBaseType(field.type));

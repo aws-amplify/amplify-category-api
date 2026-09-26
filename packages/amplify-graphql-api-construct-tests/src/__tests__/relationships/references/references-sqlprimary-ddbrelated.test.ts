@@ -3,7 +3,7 @@ import * as path from 'path';
 import * as fs from 'fs-extra';
 import * as generator from 'generate-password';
 import { DDB_AMPLIFY_MANAGED_DATASOURCE_STRATEGY } from '@aws-amplify/graphql-transformer-core';
-import { createNewProjectDir, deleteProjectDir } from 'amplify-category-api-e2e-core';
+import { createNewProjectDir, deleteProjectDir, tryScheduleCredentialRefresh } from 'amplify-category-api-e2e-core';
 import { cdkDeploy, cdkDestroy, initCDKProject } from '../../../commands';
 import { SqlDatabaseDetails, SqlDatatabaseController } from '../../../sql-datatabase-controller';
 import { TestDefinition, dbDetailsToModelDataSourceStrategy, writeStackConfig, writeTestDefinitions } from '../../../utils';
@@ -22,6 +22,7 @@ import {
 } from './test-implementations';
 
 jest.setTimeout(DURATION_1_HOUR);
+tryScheduleCredentialRefresh();
 
 describe('References relationships', () => {
   const region = process.env.CLI_REGION ?? 'us-west-2';

@@ -21,6 +21,25 @@ const GQL_TYPESCRIPT_DATA_SCHEMA_TYPE_MAP = {
 };
 
 /**
+ * Sanitizes a database identifier (column name, enum name) to produce a safe TypeScript property name.
+ * Matches the behavior of `cleanMappedName` in the GraphQL-SDL output path.
+ * - If the name has no alphabetic characters, a fallback is generated.
+ * - Leading non-alphabetic characters are stripped.
+ * - Non-alphanumeric characters (except underscores) are replaced with underscores.
+ */
+const sanitizeIdentifier = (name: string, isField: boolean = false): string => {
+  if (!name?.match(/[a-zA-Z]/)) {
+    const suffix = name?.replace(/[^0-9]+/g, '') ?? '';
+    return isField ? `field${suffix}` : `Model${suffix}`;
+  }
+
+  return name
+    .replace(/^[^a-zA-Z]+/, '')
+    .replace(/[^a-zA-Z0-9_]+/g, '_')
+    .trim();
+};
+
+/**
  * Creates a typescript data schema property from internal SQL schema representation
  * Example typescript data schema property output: `id: a.string().required()`
  * @param field SQL IR field
@@ -28,7 +47,10 @@ const GQL_TYPESCRIPT_DATA_SCHEMA_TYPE_MAP = {
  */
 const createProperty = (field: Field): ts.Node => {
   const typeExpression = createDataType(field);
-  return ts.factory.createPropertyAssignment(ts.factory.createIdentifier(field.name), typeExpression as ts.Expression);
+  return ts.factory.createPropertyAssignment(
+    ts.factory.createStringLiteral(sanitizeIdentifier(field.name, true)),
+    typeExpression as ts.Expression,
+  );
 };
 
 /**
@@ -63,7 +85,7 @@ const createDataType = (field: Field): ts.Node => {
     return ts.factory.createCallExpression(
       ts.factory.createIdentifier(`${TYPESCRIPT_DATA_SCHEMA_CONSTANTS.REFERENCE_A}.${TYPESCRIPT_DATA_SCHEMA_CONSTANTS.REF_METHOD}`),
       undefined,
-      [ts.factory.createStringLiteral(toPascalCase([field.type.name]))],
+      [ts.factory.createStringLiteral(toPascalCase([sanitizeIdentifier(field.type.name)]))],
     );
   }
 
@@ -117,7 +139,7 @@ const createEnums = (type: EnumType): ts.Node => {
       ),
     ],
   );
-  return ts.factory.createPropertyAssignment(ts.factory.createIdentifier(toPascalCase([type.name])), typeExpression);
+  return ts.factory.createPropertyAssignment(ts.factory.createStringLiteral(toPascalCase([sanitizeIdentifier(type.name)])), typeExpression);
 };
 
 const createModel = (model: Model): ts.Node => {
@@ -214,10 +236,12 @@ export const createSchema = (schema: Schema, config?: DataSourceGenerateConfig):
   // to eliminate duplicate definition of enums in case where same enum is referenced in 2 differed models
   const seenEnums = new Set<string>();
   const uniqueEnums = combinedEnums.filter((node) => {
-    if (seenEnums.has(node['name'].escapedText)) {
+    const name = node['name'];
+    const key = name.escapedText ?? name.text;
+    if (seenEnums.has(key)) {
       return false;
     } else {
-      seenEnums.add(node['name'].escapedText);
+      seenEnums.add(key);
       return true;
     }
   });
