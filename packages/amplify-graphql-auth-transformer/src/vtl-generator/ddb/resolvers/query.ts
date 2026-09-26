@@ -96,6 +96,15 @@ const generateAuthOnRelationalModelQueryExpression = (
             generateOwnerMultiClaimExpression(role.claim!, `primaryRole${idx}`),
             generateOwnerClaimListExpression(role.claim!, `ownerClaimsList${idx}`),
             ifElse(
+              methodCall(ref('util.isString'), ref(`primaryRole${idx}`)),
+              ifElse(
+                methodCall(ref('util.isList'), methodCall(ref('util.parseJson'), ref(`primaryRole${idx}`))),
+                set(ref(`ownerClaimsList${idx}`), methodCall(ref('util.parseJson'), ref(`primaryRole${idx}`))),
+                set(ref(`ownerClaimsList${idx}`), list([ref(`primaryRole${idx}`)])),
+              ),
+              set(ref(`ownerClaimsList${idx}`), ref(`primaryRole${idx}`)),
+            ),
+            ifElse(
               and([
                 parens(not(ref(`util.isNull($ctx.${claim}.${field})`))),
                 parens(
