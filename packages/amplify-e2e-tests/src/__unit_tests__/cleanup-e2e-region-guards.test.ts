@@ -345,15 +345,45 @@ describe('getOrphanTestIamPolicies', () => {
   it('returns only stale, test-named, unattached customer-managed policies', async () => {
     iamState.policies = [
       // orphan: test name, stale, attached to nothing -> deleted
-      { PolicyName: 'amplify-orphan-policy', Arn: 'arn:aws:iam::123456789012:policy/amplify-orphan-policy', CreateDate: oldDate, AttachmentCount: 0, PermissionsBoundaryUsageCount: 0 },
+      {
+        PolicyName: 'amplify-orphan-policy',
+        Arn: 'arn:aws:iam::123456789012:policy/amplify-orphan-policy',
+        CreateDate: oldDate,
+        AttachmentCount: 0,
+        PermissionsBoundaryUsageCount: 0,
+      },
       // in use: attached to a role -> kept
-      { PolicyName: 'amplify-inuse-policy', Arn: 'arn:aws:iam::123456789012:policy/amplify-inuse-policy', CreateDate: oldDate, AttachmentCount: 2, PermissionsBoundaryUsageCount: 0 },
+      {
+        PolicyName: 'amplify-inuse-policy',
+        Arn: 'arn:aws:iam::123456789012:policy/amplify-inuse-policy',
+        CreateDate: oldDate,
+        AttachmentCount: 2,
+        PermissionsBoundaryUsageCount: 0,
+      },
       // used as a permissions boundary -> kept
-      { PolicyName: 'amplify-boundary-policy', Arn: 'arn:aws:iam::123456789012:policy/amplify-boundary-policy', CreateDate: oldDate, AttachmentCount: 0, PermissionsBoundaryUsageCount: 1 },
+      {
+        PolicyName: 'amplify-boundary-policy',
+        Arn: 'arn:aws:iam::123456789012:policy/amplify-boundary-policy',
+        CreateDate: oldDate,
+        AttachmentCount: 0,
+        PermissionsBoundaryUsageCount: 1,
+      },
       // non-test name -> kept
-      { PolicyName: 'company-prod-policy', Arn: 'arn:aws:iam::123456789012:policy/company-prod-policy', CreateDate: oldDate, AttachmentCount: 0, PermissionsBoundaryUsageCount: 0 },
+      {
+        PolicyName: 'company-prod-policy',
+        Arn: 'arn:aws:iam::123456789012:policy/company-prod-policy',
+        CreateDate: oldDate,
+        AttachmentCount: 0,
+        PermissionsBoundaryUsageCount: 0,
+      },
       // too fresh -> kept
-      { PolicyName: 'amplify-fresh-policy', Arn: 'arn:aws:iam::123456789012:policy/amplify-fresh-policy', CreateDate: freshDate, AttachmentCount: 0, PermissionsBoundaryUsageCount: 0 },
+      {
+        PolicyName: 'amplify-fresh-policy',
+        Arn: 'arn:aws:iam::123456789012:policy/amplify-fresh-policy',
+        CreateDate: freshDate,
+        AttachmentCount: 0,
+        PermissionsBoundaryUsageCount: 0,
+      },
     ];
 
     const result = await getOrphanTestIamPolicies(account);
@@ -364,7 +394,13 @@ describe('getOrphanTestIamPolicies', () => {
 
   it('returns nothing when no policy is an orphan (nothing to delete)', async () => {
     iamState.policies = [
-      { PolicyName: 'amplify-inuse-policy', Arn: 'arn:aws:iam::123456789012:policy/amplify-inuse-policy', CreateDate: oldDate, AttachmentCount: 1, PermissionsBoundaryUsageCount: 0 },
+      {
+        PolicyName: 'amplify-inuse-policy',
+        Arn: 'arn:aws:iam::123456789012:policy/amplify-inuse-policy',
+        CreateDate: oldDate,
+        AttachmentCount: 1,
+        PermissionsBoundaryUsageCount: 0,
+      },
     ];
 
     const result = await getOrphanTestIamPolicies(account);

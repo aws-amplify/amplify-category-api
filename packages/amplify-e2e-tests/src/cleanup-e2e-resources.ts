@@ -1124,7 +1124,10 @@ const deleteResources = async (
     }
   }
   console.log(
-    `${generateAccountInfo(account, accountIndex)} Queued for deletion: ${appCount} Amplify app(s), ${stackCount} CloudFormation stack(s), ` +
+    `${generateAccountInfo(
+      account,
+      accountIndex,
+    )} Queued for deletion: ${appCount} Amplify app(s), ${stackCount} CloudFormation stack(s), ` +
       `${bucketCount} S3 bucket(s), ${roleCount} IAM role(s), ${policyCount} IAM policy(ies), ${appSyncApiCount} AppSync API(s), ${instanceCount} RDS instance(s). ` +
       `See the per-resource "Deleted" lines above for what succeeded.`,
   );
