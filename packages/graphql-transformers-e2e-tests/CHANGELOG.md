@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [8.9.7](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-graphql-transformers-e2e-tests@8.9.6...amplify-category-api-graphql-transformers-e2e-tests@8.9.7) (2026-09-28)
+
+### Bug Fixes
+
+- **e2e:** replace unmaintained esm loader and blind schema-deploy sleep (Node 20/22) ([#3536](https://github.com/aws-amplify/amplify-category-api/issues/3536)) ([d477944](https://github.com/aws-amplify/amplify-category-api/commit/d4779441939f6e6ec5174fe61ea76fe04defd3c7))
+
 ## [8.9.6](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-graphql-transformers-e2e-tests@8.9.5...amplify-category-api-graphql-transformers-e2e-tests@8.9.6) (2026-07-13)
 
 **Note:** Version bump only for package amplify-category-api-graphql-transformers-e2e-tests

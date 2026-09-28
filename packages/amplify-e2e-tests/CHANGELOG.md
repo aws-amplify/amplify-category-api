@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.22.25](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-tests@3.22.24...amplify-category-api-e2e-tests@3.22.25) (2026-09-28)
+
+### Bug Fixes
+
+- **e2e:** replace unmaintained esm loader and blind schema-deploy sleep (Node 20/22) ([#3536](https://github.com/aws-amplify/amplify-category-api/issues/3536)) ([d477944](https://github.com/aws-amplify/amplify-category-api/commit/d4779441939f6e6ec5174fe61ea76fe04defd3c7))
+
 ## [3.22.24](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-tests@3.22.23...amplify-category-api-e2e-tests@3.22.24) (2026-07-13)
 
 ### Bug Fixes

@@ -1,6 +1,6 @@
 {
   "name": "amplify-category-api-graphql-transformers-e2e-tests",
-  "version": "8.9.6",
+  "version": "8.9.7",
   "description": "End to end functional tests for appsync supported transformers ",
   "private": true,
   "repository": {
@@ -22,7 +22,7 @@
     "build-tests": "yarn tsc --build tsconfig.tests.json"
   },
   "dependencies": {
-    "@aws-amplify/graphql-auth-transformer": "3.6.16",
+    "@aws-amplify/graphql-auth-transformer": "3.6.17",
     "@aws-amplify/graphql-relational-transformer": "2.5.20",
     "axios": "^1.6.0",
     "cloudform-types": "^4.2.0",

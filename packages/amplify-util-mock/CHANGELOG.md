@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.7.8](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-util-mock@6.7.7...amplify-category-api-util-mock@6.7.8) (2026-09-28)
+
+### Bug Fixes
+
+- **graphql-auth-transformer:** match admin roles on the assumed-role name segment of the caller ARN ([#3528](https://github.com/aws-amplify/amplify-category-api/issues/3528)) ([08b86fd](https://github.com/aws-amplify/amplify-category-api/commit/08b86fdd0aa774d9b781891e6561bd3f732f3c70))
+
 ## [6.7.7](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-util-mock@6.7.6...amplify-category-api-util-mock@6.7.7) (2026-07-13)
 
 **Note:** Version bump only for package amplify-category-api-util-mock
