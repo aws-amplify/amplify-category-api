@@ -80,15 +80,14 @@ batch:
           CLI_REGION: eu-west-1
       depend-on:
         - publish_to_local_registry
-    - identifier: >-
-        api_5_schema_function_1_cleanup_e2e_resources_cleanup_e2e_region_guards_generate_ts_data_schema
+    - identifier: api_5_schema_function_1_generate_ts_data_schema
       buildspec: codebuild_specs/run_e2e_tests.yml
       env:
         compute-type: BUILD_GENERAL1_LARGE
         variables:
           NODE_OPTIONS: '--max-old-space-size=14848 --experimental-vm-modules'
           TEST_SUITE: >-
-            src/__tests__/api_5.test.ts|src/__tests__/schema-function-1.test.ts|src/__unit_tests__/cleanup-e2e-resources.test.ts|src/__unit_tests__/cleanup-e2e-region-guards.test.ts|src/__tests__/generate_ts_data_schema.test.ts
+            src/__tests__/api_5.test.ts|src/__tests__/schema-function-1.test.ts|src/__tests__/generate_ts_data_schema.test.ts
           CLI_REGION: ap-northeast-3
       depend-on:
         - publish_to_local_registry
@@ -1003,8 +1002,7 @@ batch:
           TEST_SUITE: src/__tests__/base-cdk.test.ts
           CLI_REGION: ap-southeast-1
       depend-on:
-        - >-
-          api_5_schema_function_1_cleanup_e2e_resources_cleanup_e2e_region_guards_generate_ts_data_schema
+        - api_5_schema_function_1_generate_ts_data_schema
     - identifier: base_cdk_ap_southeast_2
       buildspec: codebuild_specs/run_cdk_tests.yml
       env:

@@ -272,7 +272,11 @@ const saveConfig = (config: any, outputPath: string): void =>
 // eslint-disable-next-line import/namespace
 const loadTestTimings = (): { timingData: TestTiming[] } => JSON.parse(fs.readFileSync(TEST_TIMINGS_PATH, 'utf-8'));
 
-const getTestFiles = (dir: string, pattern = 'src/**/*.test.ts'): string[] => glob.sync(pattern, { cwd: dir });
+// __unit_tests__ holds AWS-free unit tests for the maintenance scripts (cleanup-e2e-resources, region
+// guards, etc.). They run in the batch's `test` job via `yarn test-ci` (jest.unit.config.js) and must
+// NOT be scheduled as e2e suites, so exclude them from e2e test discovery here.
+const getTestFiles = (dir: string, pattern = 'src/**/*.test.ts'): string[] =>
+  glob.sync(pattern, { cwd: dir }).filter((testFile) => !testFile.includes('__unit_tests__'));
 
 const createJob = (os: OSType, jobIdx: number, runSolo = false): CandidateJob => ({
   region: testRegions[jobIdx % testRegions.length],
