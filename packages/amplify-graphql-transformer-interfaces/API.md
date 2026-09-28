@@ -926,6 +926,7 @@ export type TransformParameters = {
     respectPrimaryKeyAttributesOnConnectionField: boolean;
     enableSearchNodeToNodeEncryption: boolean;
     enableGen2Migration?: boolean;
+    preserveGraphQLSchemaLogicalId?: boolean;
 };
 
 // @public (undocumented)
