@@ -91,4 +91,30 @@ describe('convertAuthorizationModesToTransformerAuthConfig', () => {
     expect(authSynthParameters.adminRoles?.[1]).toEqual('allowListed2String');
     expect(authSynthParameters.adminRoles?.[2]).toEqual('adminRole3');
   });
+
+  it('reduces an assumed-role arn string to its role-name segment', () => {
+    const { authSynthParameters } = convertAuthorizationModesToTransformerAuthConfig({
+      iamConfig: {
+        identityPoolId: 'identitypool123',
+        authenticatedUserRole: { roleName: 'testAuthRole' } as IRole,
+        unauthenticatedUserRole: { roleName: 'testUnauthRole' } as IRole,
+        allowListedRoles: ['arn:aws:sts::123456789012:assumed-role/MyAdminRole/MySession'],
+      },
+    });
+    expect(authSynthParameters.adminRoles?.length).toEqual(1);
+    expect(authSynthParameters.adminRoles?.[0]).toEqual('MyAdminRole/MySession');
+  });
+
+  it('rejects an iam role arn string that can never match a caller identity', () => {
+    expect(() =>
+      convertAuthorizationModesToTransformerAuthConfig({
+        iamConfig: {
+          identityPoolId: 'identitypool123',
+          authenticatedUserRole: { roleName: 'testAuthRole' } as IRole,
+          unauthenticatedUserRole: { roleName: 'testUnauthRole' } as IRole,
+          allowListedRoles: ['arn:aws:iam::123456789012:role/MyAdminRole'],
+        },
+      }),
+    ).toThrow(/never appears in the caller identity/);
+  });
 });
