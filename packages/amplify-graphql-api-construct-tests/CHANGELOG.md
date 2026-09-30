@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.16.7](https://github.com/aws-amplify/amplify-category-api/compare/amplify-graphql-api-construct-tests@1.16.6...amplify-graphql-api-construct-tests@1.16.7) (2026-09-30)
+
+### Bug Fixes
+
+- **amplify-graphql-api-construct-tests:** fail fast if cdk.json tsc-strip pattern stops matching ([#3520](https://github.com/aws-amplify/amplify-category-api/issues/3520)) ([1b59fa1](https://github.com/aws-amplify/amplify-category-api/commit/1b59fa1c52bf767fb18eb19f37770b003a28d801))
+- **amplify-graphql-api-construct-tests:** pin cdk init CLI and type e2e lambda scaffolds ([#3519](https://github.com/aws-amplify/amplify-category-api/issues/3519)) ([2c2f531](https://github.com/aws-amplify/amplify-category-api/commit/2c2f5314a0630e22530a0f4c3d09a615a7efa8cf))
+
 ## [1.16.6](https://github.com/aws-amplify/amplify-category-api/compare/amplify-graphql-api-construct-tests@1.16.5...amplify-graphql-api-construct-tests@1.16.6) (2026-07-13)
 
 **Note:** Version bump only for package amplify-graphql-api-construct-tests
