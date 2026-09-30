@@ -1,6 +1,6 @@
 import { attributeTypeFromType, overrideIndexAtCfnLevel } from '@aws-amplify/graphql-index-transformer';
 import { generateApplyDefaultsToInputTemplate } from '@aws-amplify/graphql-model-transformer';
-import { InvalidDirectiveError, MappingTemplate, getTable } from '@aws-amplify/graphql-transformer-core';
+import { InvalidDirectiveError, MappingTemplate, getGlobalSecondaryIndexes, getTable } from '@aws-amplify/graphql-transformer-core';
 import {
   TransformerContextProvider,
   TransformerPrepareStepContextProvider,
@@ -28,18 +28,6 @@ import { ModelResourceIDs, ResourceConstants, graphqlName, toCamelCase, toUpper 
 import { getSortKeyFields } from './schema';
 import { HasManyDirectiveConfiguration, HasOneDirectiveConfiguration } from './types';
 import { getConnectionAttributeName, getObjectPrimaryKey } from './utils';
-
-/**
- * Reads the list of global secondary indexes tracked on a DynamoDB L2 `Table` construct.
- *
- * `aws-cdk-lib` 2.260 renamed the (private) `globalSecondaryIndexes` array to `_globalSecondaryIndexes`
- * and now backs it with an `ArrayBox`, which still exposes the array-like `some`/`find`/`length` surface
- * and the same element shape (`{ indexName, keySchema }`). Amplify's own managed-table construct
- * (`AmplifyDynamoDBTable`) instead keeps its indexes on a public `globalSecondaryIndexes` array. Reading
- * `_globalSecondaryIndexes` first and falling back to `globalSecondaryIndexes` works for both table types
- * and preserves the duplicate-index-name detection rather than silently disabling it.
- */
-const getGlobalSecondaryIndexes = (table: any): any => table['_globalSecondaryIndexes'] ?? table.globalSecondaryIndexes;
 
 /**
  * Creates a GSI on the table of the `relatedType` based on the config's `references` / `referenceNodes`

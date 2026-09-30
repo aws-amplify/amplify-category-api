@@ -289,6 +289,39 @@ test('has many query case', () => {
   expect((relatedField.type as any).name.value).toEqual('ModelTest1Connection');
 });
 
+test('@hasMany connection filter input type name is PascalCased for a lowercase-first related model name (issue #3267)', () => {
+  const inputSchema = `
+    type Blog @model {
+      id: ID!
+      email: String!
+      otherParts: [otherPart] @hasMany(fields: ["id", "email"])
+    }
+
+    type otherPart @model {
+      id: ID! @primaryKey(sortKeyFields: ["email"])
+      friendID: ID!
+      email: String!
+    }`;
+  const out = testTransform({
+    schema: inputSchema,
+    transformers: [new ModelTransformer(), new PrimaryKeyTransformer(), new HasManyTransformer()],
+  });
+  const schema = parse(out.schema);
+  validateModelSchema(schema);
+
+  const blogType = schema.definitions.find((def: any) => def.name && def.name.value === 'Blog') as any;
+  const connectionField = blogType.fields.find((f: any) => f.name.value === 'otherParts');
+  const filterArg = connectionField.arguments.find((a: any) => a.name.value === 'filter');
+  // Before the fix this was 'ModelotherPartFilterInput', mismatching the client-sent variable type.
+  expect(filterArg.type.name.value).toEqual('ModelOtherPartFilterInput');
+
+  const filterInputNames = schema.definitions
+    .filter((def: any) => def.kind === Kind.INPUT_OBJECT_TYPE_DEFINITION && /OtherPartFilterInput$/i.test(def.name.value))
+    .map((def: any) => def.name.value);
+  expect(filterInputNames).toContain('ModelOtherPartFilterInput');
+  expect(filterInputNames).not.toContain('ModelotherPartFilterInput');
+});
+
 test('bidirectional has many query case', () => {
   const inputSchema = `
     type Post @model {

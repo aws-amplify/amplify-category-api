@@ -142,6 +142,44 @@ export function makeCompositeKeyInputForKey(
   return makeInputObjectDefinition(inputName, inputValues);
 }
 
+// The set of comparison operators a ModelXKeyConditionInput may carry. A DynamoDB
+// KeyConditionExpression can hold at most one condition per key, so supplying more
+// than one of these on a single sort-key argument is invalid.
+const SORT_KEY_CONDITION_OPERATORS = ['beginsWith', 'between', 'eq', 'lt', 'le', 'gt', 'ge'];
+
+/**
+ * Emits VTL that fails the request with an InvalidArgumentsError when more than one
+ * comparison operator is supplied on a single sort-key condition argument.
+ *
+ * The operator branches that build the KeyConditionExpression are independent (not
+ * mutually exclusive), so without this guard two operators (e.g. `{ ge, le }`) would
+ * both be appended, producing two conditions on the same key. DynamoDB then rejects
+ * the query with the opaque "KeyConditionExpressions must only contain one condition
+ * per key". This surfaces the problem as an actionable, synth-consistent error before
+ * the request is sent.
+ * @param argAccessor The VTL accessor for the key-condition object, e.g. `$ctx.args.createdAt`.
+ */
+function validateSingleKeyConditionOperator(argAccessor: string): Expression {
+  const counter = 'keyConditionOperatorCount';
+  return iff(
+    raw(`!$util.isNull(${argAccessor})`),
+    compoundExpression([
+      set(ref(counter), raw('0')),
+      ...SORT_KEY_CONDITION_OPERATORS.map((op) =>
+        iff(raw(`!$util.isNull(${argAccessor}.${op})`), set(ref(counter), raw(`$${counter} + 1`))),
+      ),
+      iff(
+        raw(`$${counter} > 1`),
+        raw(
+          '$util.error("KeyConditionExpressions must only contain one condition per key. ' +
+            'Provide a single operator (one of eq, lt, le, gt, ge, beginsWith, between) on the sort key argument.", ' +
+            '"InvalidArgumentsError")',
+        ),
+      ),
+    ]),
+  );
+}
+
 /**
  * Key conditions materialize as instances of ModelXKeyConditionInput passed via $ctx.args.
  * If the arguments with the given sortKey name exists, create a DynamoDB expression that
@@ -160,6 +198,7 @@ export function applyKeyConditionExpression(
   const prefixValue = (value: string): string => (prefixVariableName ? `$${prefixVariableName}#${value}` : value);
   const _sortKeyName = sortKeyName ? sortKeyName : argName;
   return block('Applying Key Condition', [
+    validateSingleKeyConditionOperator(`$ctx.args.${argName}`),
     iff(
       raw(`!$util.isNull($ctx.args.${argName}) && !$util.isNull($ctx.args.${argName}.beginsWith)`),
       compoundExpression([
@@ -270,6 +309,7 @@ export function applyCompositeKeyConditionExpression(
   const accumulatorVar2 = 'sortKeyValue2';
   const sep = ModelResourceIDs.ModelCompositeKeySeparator();
   return block('Applying Key Condition', [
+    validateSingleKeyConditionOperator(`$ctx.args.${sortKeyArgumentName}`),
     set(ref(accumulatorVar1), str('')),
     set(ref(accumulatorVar2), str('')),
     iff(

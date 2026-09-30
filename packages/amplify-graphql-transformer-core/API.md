@@ -105,6 +105,9 @@ import { Visibility } from 'aws-cdk-lib/aws-appsync';
 import { VTLRuntimeTemplate } from '@aws-amplify/graphql-transformer-interfaces';
 
 // @public (undocumented)
+export const addCfnResourceDependency: (source: CfnResource, target: CfnResource) => void;
+
+// @public (undocumented)
 export const APICategory = "api";
 
 // @public (undocumented)
@@ -249,6 +252,9 @@ export const getFieldNameFor: (op: Operation, typeName: string) => string;
 
 // @public (undocumented)
 export const getFilterInputName: (modelName: string) => string;
+
+// @public (undocumented)
+export const getGlobalSecondaryIndexes: (table: any) => any;
 
 // @public (undocumented)
 export const getImportedRDSTypeFromStrategyDbType: (dbType: ModelDataSourceStrategyDbType) => ImportedRDSType;

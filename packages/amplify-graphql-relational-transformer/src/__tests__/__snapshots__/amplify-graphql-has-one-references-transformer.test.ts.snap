@@ -1638,6 +1638,33 @@ $util.toJson({})
 } )
 #end
 ## [Start] Applying Key Condition **
+#if( !$util.isNull($ctx.args.mantraOrganization) )
+  #set( $keyConditionOperatorCount = 0 )
+  #if( !$util.isNull($ctx.args.mantraOrganization.beginsWith) )
+    #set( $keyConditionOperatorCount = $keyConditionOperatorCount + 1 )
+  #end
+  #if( !$util.isNull($ctx.args.mantraOrganization.between) )
+    #set( $keyConditionOperatorCount = $keyConditionOperatorCount + 1 )
+  #end
+  #if( !$util.isNull($ctx.args.mantraOrganization.eq) )
+    #set( $keyConditionOperatorCount = $keyConditionOperatorCount + 1 )
+  #end
+  #if( !$util.isNull($ctx.args.mantraOrganization.lt) )
+    #set( $keyConditionOperatorCount = $keyConditionOperatorCount + 1 )
+  #end
+  #if( !$util.isNull($ctx.args.mantraOrganization.le) )
+    #set( $keyConditionOperatorCount = $keyConditionOperatorCount + 1 )
+  #end
+  #if( !$util.isNull($ctx.args.mantraOrganization.gt) )
+    #set( $keyConditionOperatorCount = $keyConditionOperatorCount + 1 )
+  #end
+  #if( !$util.isNull($ctx.args.mantraOrganization.ge) )
+    #set( $keyConditionOperatorCount = $keyConditionOperatorCount + 1 )
+  #end
+  #if( $keyConditionOperatorCount > 1 )
+    $util.error(\\"KeyConditionExpressions must only contain one condition per key. Provide a single operator (one of eq, lt, le, gt, ge, beginsWith, between) on the sort key argument.\\", \\"InvalidArgumentsError\\")
+  #end
+#end
 #set( $sortKeyValue = \\"\\" )
 #set( $sortKeyValue2 = \\"\\" )
 #if( !$util.isNull($ctx.args.mantraOrganization) && !$util.isNull($ctx.args.mantraOrganization.beginsWith) )

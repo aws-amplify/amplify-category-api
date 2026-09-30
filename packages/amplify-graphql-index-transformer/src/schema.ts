@@ -32,7 +32,7 @@ import {
   withNamedNodeNamed,
   wrapNonNull,
 } from 'graphql-transformer-common';
-import { InvalidDirectiveError } from '@aws-amplify/graphql-transformer-core';
+import { getFilterInputName, InvalidDirectiveError } from '@aws-amplify/graphql-transformer-core';
 import { IndexDirectiveConfiguration, PrimaryKeyDirectiveConfiguration } from './types';
 import { lookupResolverName } from './utils';
 
@@ -350,8 +350,18 @@ export function ensureQueryField(config: IndexDirectiveConfiguration, ctx: Trans
   }
 
   const queryFieldObj = makeConnectionField(queryField, object.name.value, args, directives);
+  // makeConnectionField derives the `filter` arg type from the raw model name; the model
+  // transformer and generated client use the PascalCased getFilterInputName. Align to it so
+  // models whose names don't start with an uppercase letter don't get a mismatched type name.
+  const filterInputName = getFilterInputName(object.name.value);
+  const queryFieldWithFilter: FieldDefinitionNode = {
+    ...queryFieldObj,
+    arguments: queryFieldObj.arguments!.map((arg) =>
+      arg.name.value === 'filter' ? { ...arg, type: makeNamedType(filterInputName) } : arg,
+    ),
+  };
 
-  ctx.output.addQueryFields([queryFieldObj]);
+  ctx.output.addQueryFields([queryFieldWithFilter]);
   ensureModelSortDirectionEnum(ctx);
   generateFilterInputs(config, ctx);
   generateModelXConnectionType(config, ctx);
@@ -406,7 +416,7 @@ function generateFilterInputs(config: IndexDirectiveConfiguration, ctx: Transfor
 function makeModelXFilterInputObject(config: IndexDirectiveConfiguration, ctx: TransformerContextProvider): InputObjectTypeDefinitionNode {
   const supportsConditions = true;
   const { object } = config;
-  const name = ModelResourceIDs.ModelFilterInputTypeName(object.name.value);
+  const name = getFilterInputName(object.name.value);
   const fields = object
     .fields!.filter((field: FieldDefinitionNode) => {
       const fieldType = ctx.output.getType(getBaseType(field.type));
