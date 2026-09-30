@@ -188,15 +188,23 @@ export const generateIAMAccessCheck = (enableIamAccess: boolean, expression: Exp
 
 /**
  * Creates iam admin role check helper
+ *
+ * Admin roles are role-name shaped needles (`<RoleName>` or `<RoleName>/<SessionName>`), so each needle is anchored between
+ * `:assumed-role/` and `/` within a slash-terminated copy of the caller arn. A role session name cannot contain `/` or `:`, so
+ * `:assumed-role/` appears exactly once in a real assumed-role arn, which makes the anchored match unambiguous.
  */
 export const iamAdminRoleCheckExpression = (fieldName?: string, adminCheckExpression?: Expression): Expression => {
   const returnStatement = fieldName ? raw(`#return($context.source.${fieldName})`) : raw('#return($util.toJson({}))');
   const fullReturnExpression = adminCheckExpression ? compoundExpression([adminCheckExpression, returnStatement]) : returnStatement;
   return compoundExpression([
+    // the `${...}` sequences here are Velocity interpolations evaluated by AppSync, not JavaScript template placeholders
+    // eslint-disable-next-line no-template-curly-in-string
+    set(ref('userArnWithTrailingSlash'), str('${ctx.identity.userArn}/')),
     forEach(/* for */ ref('adminRole'), /* in */ ref('ctx.stash.adminRoles'), [
       iff(
         and([
-          methodCall(ref('ctx.identity.userArn.contains'), ref('adminRole')),
+          // eslint-disable-next-line no-template-curly-in-string
+          methodCall(ref('userArnWithTrailingSlash.contains'), str(':assumed-role/${adminRole}/')),
           notEquals(ref('ctx.identity.userArn'), ref('ctx.stash.authRole')),
           notEquals(ref('ctx.identity.userArn'), ref('ctx.stash.unauthRole')),
         ]),

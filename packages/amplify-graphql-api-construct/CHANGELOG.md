@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.22.2](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-api-construct@1.22.1...@aws-amplify/graphql-api-construct@1.22.2) (2026-07-13)
+
+**Note:** Version bump only for package @aws-amplify/graphql-api-construct
+
+## [1.22.1](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-api-construct@1.22.0...@aws-amplify/graphql-api-construct@1.22.1) (2026-07-13)
+
+**Note:** Version bump only for package @aws-amplify/graphql-api-construct
+
+# [1.22.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-api-construct@1.21.4...@aws-amplify/graphql-api-construct@1.22.0) (2026-07-13)
+
+### Bug Fixes
+
+- **construct:** re-pin @aws-sdk/\* exact and collapse [@smithy](https://github.com/smithy) dedupe (58k → ~15k files) ([#3508](https://github.com/aws-amplify/amplify-category-api/issues/3508)) ([51fa6e5](https://github.com/aws-amplify/amplify-category-api/commit/51fa6e5a33b24bf2964a0d33479091730f14f3f0))
+- resolve high dependabot vulnerabilities ([#3505](https://github.com/aws-amplify/amplify-category-api/issues/3505)) ([ebaf1e0](https://github.com/aws-amplify/amplify-category-api/commit/ebaf1e03f4347d2abe66974dd407e57b53358414))
+
+### Features
+
+- add opt-in minimizeRdsVpcEndpoints to the SQL data source strategy ([#3449](https://github.com/aws-amplify/amplify-category-api/issues/3449)) ([6693c8f](https://github.com/aws-amplify/amplify-category-api/commit/6693c8f12c970e3e82cd8ab4b7acf36b0308bf87))
+
 ## [1.21.4](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-api-construct@1.21.3...@aws-amplify/graphql-api-construct@1.21.4) (2026-07-01)
 
 ### Bug Fixes

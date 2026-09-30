@@ -467,6 +467,33 @@ $util.toJson({})
 } )
 #end
 ## [Start] Applying Key Condition **
+#if( !$util.isNull($ctx.args.createdAt) )
+  #set( $keyConditionOperatorCount = 0 )
+  #if( !$util.isNull($ctx.args.createdAt.beginsWith) )
+    #set( $keyConditionOperatorCount = $keyConditionOperatorCount + 1 )
+  #end
+  #if( !$util.isNull($ctx.args.createdAt.between) )
+    #set( $keyConditionOperatorCount = $keyConditionOperatorCount + 1 )
+  #end
+  #if( !$util.isNull($ctx.args.createdAt.eq) )
+    #set( $keyConditionOperatorCount = $keyConditionOperatorCount + 1 )
+  #end
+  #if( !$util.isNull($ctx.args.createdAt.lt) )
+    #set( $keyConditionOperatorCount = $keyConditionOperatorCount + 1 )
+  #end
+  #if( !$util.isNull($ctx.args.createdAt.le) )
+    #set( $keyConditionOperatorCount = $keyConditionOperatorCount + 1 )
+  #end
+  #if( !$util.isNull($ctx.args.createdAt.gt) )
+    #set( $keyConditionOperatorCount = $keyConditionOperatorCount + 1 )
+  #end
+  #if( !$util.isNull($ctx.args.createdAt.ge) )
+    #set( $keyConditionOperatorCount = $keyConditionOperatorCount + 1 )
+  #end
+  #if( $keyConditionOperatorCount > 1 )
+    $util.error(\\"KeyConditionExpressions must only contain one condition per key. Provide a single operator (one of eq, lt, le, gt, ge, beginsWith, between) on the sort key argument.\\", \\"InvalidArgumentsError\\")
+  #end
+#end
 #if( !$util.isNull($ctx.args.createdAt) && !$util.isNull($ctx.args.createdAt.beginsWith) )
   #set( $modelQueryExpression.expression = \\"$modelQueryExpression.expression AND begins_with(#sortKey, :sortKey)\\" )
   $util.qr($modelQueryExpression.expressionNames.put(\\"#sortKey\\", \\"createdAt\\"))
@@ -1094,6 +1121,33 @@ $util.toJson({})
 } )
 #end
 ## [Start] Applying Key Condition **
+#if( !$util.isNull($ctx.args.kindDate) )
+  #set( $keyConditionOperatorCount = 0 )
+  #if( !$util.isNull($ctx.args.kindDate.beginsWith) )
+    #set( $keyConditionOperatorCount = $keyConditionOperatorCount + 1 )
+  #end
+  #if( !$util.isNull($ctx.args.kindDate.between) )
+    #set( $keyConditionOperatorCount = $keyConditionOperatorCount + 1 )
+  #end
+  #if( !$util.isNull($ctx.args.kindDate.eq) )
+    #set( $keyConditionOperatorCount = $keyConditionOperatorCount + 1 )
+  #end
+  #if( !$util.isNull($ctx.args.kindDate.lt) )
+    #set( $keyConditionOperatorCount = $keyConditionOperatorCount + 1 )
+  #end
+  #if( !$util.isNull($ctx.args.kindDate.le) )
+    #set( $keyConditionOperatorCount = $keyConditionOperatorCount + 1 )
+  #end
+  #if( !$util.isNull($ctx.args.kindDate.gt) )
+    #set( $keyConditionOperatorCount = $keyConditionOperatorCount + 1 )
+  #end
+  #if( !$util.isNull($ctx.args.kindDate.ge) )
+    #set( $keyConditionOperatorCount = $keyConditionOperatorCount + 1 )
+  #end
+  #if( $keyConditionOperatorCount > 1 )
+    $util.error(\\"KeyConditionExpressions must only contain one condition per key. Provide a single operator (one of eq, lt, le, gt, ge, beginsWith, between) on the sort key argument.\\", \\"InvalidArgumentsError\\")
+  #end
+#end
 #set( $sortKeyValue = \\"\\" )
 #set( $sortKeyValue2 = \\"\\" )
 #if( !$util.isNull($ctx.args.kindDate) && !$util.isNull($ctx.args.kindDate.beginsWith) )
@@ -3491,6 +3545,33 @@ $util.toJson({})
 } )
 #end
 ## [Start] Applying Key Condition **
+#if( !$util.isNull($ctx.args.createdAt) )
+  #set( $keyConditionOperatorCount = 0 )
+  #if( !$util.isNull($ctx.args.createdAt.beginsWith) )
+    #set( $keyConditionOperatorCount = $keyConditionOperatorCount + 1 )
+  #end
+  #if( !$util.isNull($ctx.args.createdAt.between) )
+    #set( $keyConditionOperatorCount = $keyConditionOperatorCount + 1 )
+  #end
+  #if( !$util.isNull($ctx.args.createdAt.eq) )
+    #set( $keyConditionOperatorCount = $keyConditionOperatorCount + 1 )
+  #end
+  #if( !$util.isNull($ctx.args.createdAt.lt) )
+    #set( $keyConditionOperatorCount = $keyConditionOperatorCount + 1 )
+  #end
+  #if( !$util.isNull($ctx.args.createdAt.le) )
+    #set( $keyConditionOperatorCount = $keyConditionOperatorCount + 1 )
+  #end
+  #if( !$util.isNull($ctx.args.createdAt.gt) )
+    #set( $keyConditionOperatorCount = $keyConditionOperatorCount + 1 )
+  #end
+  #if( !$util.isNull($ctx.args.createdAt.ge) )
+    #set( $keyConditionOperatorCount = $keyConditionOperatorCount + 1 )
+  #end
+  #if( $keyConditionOperatorCount > 1 )
+    $util.error(\\"KeyConditionExpressions must only contain one condition per key. Provide a single operator (one of eq, lt, le, gt, ge, beginsWith, between) on the sort key argument.\\", \\"InvalidArgumentsError\\")
+  #end
+#end
 #if( !$util.isNull($ctx.args.createdAt) && !$util.isNull($ctx.args.createdAt.beginsWith) )
   #set( $modelQueryExpression.expression = \\"$modelQueryExpression.expression AND begins_with(#sortKey, :sortKey)\\" )
   $util.qr($modelQueryExpression.expressionNames.put(\\"#sortKey\\", \\"createdAt\\"))
@@ -3613,6 +3694,33 @@ $util.toJson({})
 } )
 #end
 ## [Start] Applying Key Condition **
+#if( !$util.isNull($ctx.args.createdAt) )
+  #set( $keyConditionOperatorCount = 0 )
+  #if( !$util.isNull($ctx.args.createdAt.beginsWith) )
+    #set( $keyConditionOperatorCount = $keyConditionOperatorCount + 1 )
+  #end
+  #if( !$util.isNull($ctx.args.createdAt.between) )
+    #set( $keyConditionOperatorCount = $keyConditionOperatorCount + 1 )
+  #end
+  #if( !$util.isNull($ctx.args.createdAt.eq) )
+    #set( $keyConditionOperatorCount = $keyConditionOperatorCount + 1 )
+  #end
+  #if( !$util.isNull($ctx.args.createdAt.lt) )
+    #set( $keyConditionOperatorCount = $keyConditionOperatorCount + 1 )
+  #end
+  #if( !$util.isNull($ctx.args.createdAt.le) )
+    #set( $keyConditionOperatorCount = $keyConditionOperatorCount + 1 )
+  #end
+  #if( !$util.isNull($ctx.args.createdAt.gt) )
+    #set( $keyConditionOperatorCount = $keyConditionOperatorCount + 1 )
+  #end
+  #if( !$util.isNull($ctx.args.createdAt.ge) )
+    #set( $keyConditionOperatorCount = $keyConditionOperatorCount + 1 )
+  #end
+  #if( $keyConditionOperatorCount > 1 )
+    $util.error(\\"KeyConditionExpressions must only contain one condition per key. Provide a single operator (one of eq, lt, le, gt, ge, beginsWith, between) on the sort key argument.\\", \\"InvalidArgumentsError\\")
+  #end
+#end
 #if( !$util.isNull($ctx.args.createdAt) && !$util.isNull($ctx.args.createdAt.beginsWith) )
   #set( $modelQueryExpression.expression = \\"$modelQueryExpression.expression AND begins_with(#sortKey, :sortKey)\\" )
   $util.qr($modelQueryExpression.expressionNames.put(\\"#sortKey\\", \\"createdAt\\"))
@@ -4209,6 +4317,33 @@ $util.toJson({})
 } )
 #end
 ## [Start] Applying Key Condition **
+#if( !$util.isNull($ctx.args.status) )
+  #set( $keyConditionOperatorCount = 0 )
+  #if( !$util.isNull($ctx.args.status.beginsWith) )
+    #set( $keyConditionOperatorCount = $keyConditionOperatorCount + 1 )
+  #end
+  #if( !$util.isNull($ctx.args.status.between) )
+    #set( $keyConditionOperatorCount = $keyConditionOperatorCount + 1 )
+  #end
+  #if( !$util.isNull($ctx.args.status.eq) )
+    #set( $keyConditionOperatorCount = $keyConditionOperatorCount + 1 )
+  #end
+  #if( !$util.isNull($ctx.args.status.lt) )
+    #set( $keyConditionOperatorCount = $keyConditionOperatorCount + 1 )
+  #end
+  #if( !$util.isNull($ctx.args.status.le) )
+    #set( $keyConditionOperatorCount = $keyConditionOperatorCount + 1 )
+  #end
+  #if( !$util.isNull($ctx.args.status.gt) )
+    #set( $keyConditionOperatorCount = $keyConditionOperatorCount + 1 )
+  #end
+  #if( !$util.isNull($ctx.args.status.ge) )
+    #set( $keyConditionOperatorCount = $keyConditionOperatorCount + 1 )
+  #end
+  #if( $keyConditionOperatorCount > 1 )
+    $util.error(\\"KeyConditionExpressions must only contain one condition per key. Provide a single operator (one of eq, lt, le, gt, ge, beginsWith, between) on the sort key argument.\\", \\"InvalidArgumentsError\\")
+  #end
+#end
 #if( !$util.isNull($ctx.args.status) && !$util.isNull($ctx.args.status.beginsWith) )
   #set( $modelQueryExpression.expression = \\"$modelQueryExpression.expression AND begins_with(#sortKey, :sortKey)\\" )
   $util.qr($modelQueryExpression.expressionNames.put(\\"#sortKey\\", \\"status\\"))
@@ -4316,6 +4451,33 @@ $util.toJson({})
 } )
 #end
 ## [Start] Applying Key Condition **
+#if( !$util.isNull($ctx.args.createdAt) )
+  #set( $keyConditionOperatorCount = 0 )
+  #if( !$util.isNull($ctx.args.createdAt.beginsWith) )
+    #set( $keyConditionOperatorCount = $keyConditionOperatorCount + 1 )
+  #end
+  #if( !$util.isNull($ctx.args.createdAt.between) )
+    #set( $keyConditionOperatorCount = $keyConditionOperatorCount + 1 )
+  #end
+  #if( !$util.isNull($ctx.args.createdAt.eq) )
+    #set( $keyConditionOperatorCount = $keyConditionOperatorCount + 1 )
+  #end
+  #if( !$util.isNull($ctx.args.createdAt.lt) )
+    #set( $keyConditionOperatorCount = $keyConditionOperatorCount + 1 )
+  #end
+  #if( !$util.isNull($ctx.args.createdAt.le) )
+    #set( $keyConditionOperatorCount = $keyConditionOperatorCount + 1 )
+  #end
+  #if( !$util.isNull($ctx.args.createdAt.gt) )
+    #set( $keyConditionOperatorCount = $keyConditionOperatorCount + 1 )
+  #end
+  #if( !$util.isNull($ctx.args.createdAt.ge) )
+    #set( $keyConditionOperatorCount = $keyConditionOperatorCount + 1 )
+  #end
+  #if( $keyConditionOperatorCount > 1 )
+    $util.error(\\"KeyConditionExpressions must only contain one condition per key. Provide a single operator (one of eq, lt, le, gt, ge, beginsWith, between) on the sort key argument.\\", \\"InvalidArgumentsError\\")
+  #end
+#end
 #if( !$util.isNull($ctx.args.createdAt) && !$util.isNull($ctx.args.createdAt.beginsWith) )
   #set( $modelQueryExpression.expression = \\"$modelQueryExpression.expression AND begins_with(#sortKey, :sortKey)\\" )
   $util.qr($modelQueryExpression.expressionNames.put(\\"#sortKey\\", \\"createdAt\\"))
@@ -4449,6 +4611,33 @@ $util.toJson({})
 } )
 #end
 ## [Start] Applying Key Condition **
+#if( !$util.isNull($ctx.args.statusCreatedAt) )
+  #set( $keyConditionOperatorCount = 0 )
+  #if( !$util.isNull($ctx.args.statusCreatedAt.beginsWith) )
+    #set( $keyConditionOperatorCount = $keyConditionOperatorCount + 1 )
+  #end
+  #if( !$util.isNull($ctx.args.statusCreatedAt.between) )
+    #set( $keyConditionOperatorCount = $keyConditionOperatorCount + 1 )
+  #end
+  #if( !$util.isNull($ctx.args.statusCreatedAt.eq) )
+    #set( $keyConditionOperatorCount = $keyConditionOperatorCount + 1 )
+  #end
+  #if( !$util.isNull($ctx.args.statusCreatedAt.lt) )
+    #set( $keyConditionOperatorCount = $keyConditionOperatorCount + 1 )
+  #end
+  #if( !$util.isNull($ctx.args.statusCreatedAt.le) )
+    #set( $keyConditionOperatorCount = $keyConditionOperatorCount + 1 )
+  #end
+  #if( !$util.isNull($ctx.args.statusCreatedAt.gt) )
+    #set( $keyConditionOperatorCount = $keyConditionOperatorCount + 1 )
+  #end
+  #if( !$util.isNull($ctx.args.statusCreatedAt.ge) )
+    #set( $keyConditionOperatorCount = $keyConditionOperatorCount + 1 )
+  #end
+  #if( $keyConditionOperatorCount > 1 )
+    $util.error(\\"KeyConditionExpressions must only contain one condition per key. Provide a single operator (one of eq, lt, le, gt, ge, beginsWith, between) on the sort key argument.\\", \\"InvalidArgumentsError\\")
+  #end
+#end
 #set( $sortKeyValue = \\"\\" )
 #set( $sortKeyValue2 = \\"\\" )
 #if( !$util.isNull($ctx.args.statusCreatedAt) && !$util.isNull($ctx.args.statusCreatedAt.beginsWith) )
@@ -7036,6 +7225,33 @@ $util.toJson({})
 } )
 #end
 ## [Start] Applying Key Condition **
+#if( !$util.isNull($ctx.args.status) )
+  #set( $keyConditionOperatorCount = 0 )
+  #if( !$util.isNull($ctx.args.status.beginsWith) )
+    #set( $keyConditionOperatorCount = $keyConditionOperatorCount + 1 )
+  #end
+  #if( !$util.isNull($ctx.args.status.between) )
+    #set( $keyConditionOperatorCount = $keyConditionOperatorCount + 1 )
+  #end
+  #if( !$util.isNull($ctx.args.status.eq) )
+    #set( $keyConditionOperatorCount = $keyConditionOperatorCount + 1 )
+  #end
+  #if( !$util.isNull($ctx.args.status.lt) )
+    #set( $keyConditionOperatorCount = $keyConditionOperatorCount + 1 )
+  #end
+  #if( !$util.isNull($ctx.args.status.le) )
+    #set( $keyConditionOperatorCount = $keyConditionOperatorCount + 1 )
+  #end
+  #if( !$util.isNull($ctx.args.status.gt) )
+    #set( $keyConditionOperatorCount = $keyConditionOperatorCount + 1 )
+  #end
+  #if( !$util.isNull($ctx.args.status.ge) )
+    #set( $keyConditionOperatorCount = $keyConditionOperatorCount + 1 )
+  #end
+  #if( $keyConditionOperatorCount > 1 )
+    $util.error(\\"KeyConditionExpressions must only contain one condition per key. Provide a single operator (one of eq, lt, le, gt, ge, beginsWith, between) on the sort key argument.\\", \\"InvalidArgumentsError\\")
+  #end
+#end
 #if( !$util.isNull($ctx.args.status) && !$util.isNull($ctx.args.status.beginsWith) )
   #set( $modelQueryExpression.expression = \\"$modelQueryExpression.expression AND begins_with(#sortKey, :sortKey)\\" )
   $util.qr($modelQueryExpression.expressionNames.put(\\"#sortKey\\", \\"status\\"))
@@ -7143,6 +7359,33 @@ $util.toJson({})
 } )
 #end
 ## [Start] Applying Key Condition **
+#if( !$util.isNull($ctx.args.createdAt) )
+  #set( $keyConditionOperatorCount = 0 )
+  #if( !$util.isNull($ctx.args.createdAt.beginsWith) )
+    #set( $keyConditionOperatorCount = $keyConditionOperatorCount + 1 )
+  #end
+  #if( !$util.isNull($ctx.args.createdAt.between) )
+    #set( $keyConditionOperatorCount = $keyConditionOperatorCount + 1 )
+  #end
+  #if( !$util.isNull($ctx.args.createdAt.eq) )
+    #set( $keyConditionOperatorCount = $keyConditionOperatorCount + 1 )
+  #end
+  #if( !$util.isNull($ctx.args.createdAt.lt) )
+    #set( $keyConditionOperatorCount = $keyConditionOperatorCount + 1 )
+  #end
+  #if( !$util.isNull($ctx.args.createdAt.le) )
+    #set( $keyConditionOperatorCount = $keyConditionOperatorCount + 1 )
+  #end
+  #if( !$util.isNull($ctx.args.createdAt.gt) )
+    #set( $keyConditionOperatorCount = $keyConditionOperatorCount + 1 )
+  #end
+  #if( !$util.isNull($ctx.args.createdAt.ge) )
+    #set( $keyConditionOperatorCount = $keyConditionOperatorCount + 1 )
+  #end
+  #if( $keyConditionOperatorCount > 1 )
+    $util.error(\\"KeyConditionExpressions must only contain one condition per key. Provide a single operator (one of eq, lt, le, gt, ge, beginsWith, between) on the sort key argument.\\", \\"InvalidArgumentsError\\")
+  #end
+#end
 #if( !$util.isNull($ctx.args.createdAt) && !$util.isNull($ctx.args.createdAt.beginsWith) )
   #set( $modelQueryExpression.expression = \\"$modelQueryExpression.expression AND begins_with(#sortKey, :sortKey)\\" )
   $util.qr($modelQueryExpression.expressionNames.put(\\"#sortKey\\", \\"createdAt\\"))
@@ -7276,6 +7519,33 @@ $util.toJson({})
 } )
 #end
 ## [Start] Applying Key Condition **
+#if( !$util.isNull($ctx.args.statusCreatedAt) )
+  #set( $keyConditionOperatorCount = 0 )
+  #if( !$util.isNull($ctx.args.statusCreatedAt.beginsWith) )
+    #set( $keyConditionOperatorCount = $keyConditionOperatorCount + 1 )
+  #end
+  #if( !$util.isNull($ctx.args.statusCreatedAt.between) )
+    #set( $keyConditionOperatorCount = $keyConditionOperatorCount + 1 )
+  #end
+  #if( !$util.isNull($ctx.args.statusCreatedAt.eq) )
+    #set( $keyConditionOperatorCount = $keyConditionOperatorCount + 1 )
+  #end
+  #if( !$util.isNull($ctx.args.statusCreatedAt.lt) )
+    #set( $keyConditionOperatorCount = $keyConditionOperatorCount + 1 )
+  #end
+  #if( !$util.isNull($ctx.args.statusCreatedAt.le) )
+    #set( $keyConditionOperatorCount = $keyConditionOperatorCount + 1 )
+  #end
+  #if( !$util.isNull($ctx.args.statusCreatedAt.gt) )
+    #set( $keyConditionOperatorCount = $keyConditionOperatorCount + 1 )
+  #end
+  #if( !$util.isNull($ctx.args.statusCreatedAt.ge) )
+    #set( $keyConditionOperatorCount = $keyConditionOperatorCount + 1 )
+  #end
+  #if( $keyConditionOperatorCount > 1 )
+    $util.error(\\"KeyConditionExpressions must only contain one condition per key. Provide a single operator (one of eq, lt, le, gt, ge, beginsWith, between) on the sort key argument.\\", \\"InvalidArgumentsError\\")
+  #end
+#end
 #set( $sortKeyValue = \\"\\" )
 #set( $sortKeyValue2 = \\"\\" )
 #if( !$util.isNull($ctx.args.statusCreatedAt) && !$util.isNull($ctx.args.statusCreatedAt.beginsWith) )

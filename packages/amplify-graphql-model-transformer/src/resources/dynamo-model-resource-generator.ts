@@ -2,7 +2,7 @@ import * as cdk from 'aws-cdk-lib';
 import { TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { ModelResourceIDs, ResourceConstants, SyncResourceIDs } from 'graphql-transformer-common';
 import { ObjectTypeDefinitionNode } from 'graphql';
-import { SyncUtils, setResourceName } from '@aws-amplify/graphql-transformer-core';
+import { SyncUtils, setResourceName, addCfnResourceDependency } from '@aws-amplify/graphql-transformer-core';
 import { AttributeType, CfnTable, ITable, StreamViewType, Table, TableEncryption } from 'aws-cdk-lib/aws-dynamodb';
 import { CfnDataSource } from 'aws-cdk-lib/aws-appsync';
 import * as iam from 'aws-cdk-lib/aws-iam';
@@ -139,7 +139,7 @@ export class DynamoModelResourceGenerator extends ModelResourceGenerator {
     );
 
     const cfnDataSource = dataSource.node.defaultChild as CfnDataSource;
-    cfnDataSource.addDependency(role.node.defaultChild as CfnRole);
+    addCfnResourceDependency(cfnDataSource, role.node.defaultChild as CfnRole);
 
     if (context.isProjectUsingDataStore()) {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any

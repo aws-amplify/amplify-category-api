@@ -398,8 +398,8 @@ Object {
       "Update": Object {
         "IndexName": "gsi1",
         "ProvisionedThroughput": Object {
-          "ReadCapacityUnits": 5,
-          "WriteCapacityUnits": 5,
+          "ReadCapacityUnits": 4,
+          "WriteCapacityUnits": 4,
         },
       },
     },

@@ -3,6 +3,20 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.16.6](https://github.com/aws-amplify/amplify-category-api/compare/amplify-graphql-api-construct-tests@1.16.5...amplify-graphql-api-construct-tests@1.16.6) (2026-07-13)
+
+**Note:** Version bump only for package amplify-graphql-api-construct-tests
+
+## [1.16.5](https://github.com/aws-amplify/amplify-category-api/compare/amplify-graphql-api-construct-tests@1.16.4...amplify-graphql-api-construct-tests@1.16.5) (2026-07-13)
+
+**Note:** Version bump only for package amplify-graphql-api-construct-tests
+
+## [1.16.4](https://github.com/aws-amplify/amplify-category-api/compare/amplify-graphql-api-construct-tests@1.16.3...amplify-graphql-api-construct-tests@1.16.4) (2026-07-13)
+
+### Bug Fixes
+
+- resolve high dependabot vulnerabilities ([#3505](https://github.com/aws-amplify/amplify-category-api/issues/3505)) ([ebaf1e0](https://github.com/aws-amplify/amplify-category-api/commit/ebaf1e03f4347d2abe66974dd407e57b53358414))
+
 ## [1.16.3](https://github.com/aws-amplify/amplify-category-api/compare/amplify-graphql-api-construct-tests@1.16.2...amplify-graphql-api-construct-tests@1.16.3) (2026-07-01)
 
 ### Bug Fixes
