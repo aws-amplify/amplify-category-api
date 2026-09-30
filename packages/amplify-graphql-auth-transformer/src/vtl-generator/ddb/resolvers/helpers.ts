@@ -190,10 +190,8 @@ export const generateIAMAccessCheck = (enableIamAccess: boolean, expression: Exp
  * Creates iam admin role check helper
  *
  * Admin roles are role-name shaped needles (`<RoleName>` or `<RoleName>/<SessionName>`), so each needle is anchored between
- * `:assumed-role/` and `/` within a slash-terminated copy of the caller arn. That anchoring is what the check's safety rests on: a
- * role session name cannot contain `/` or `:`, so `:assumed-role/` appears exactly once in a real assumed-role arn and a
- * caller-chosen session name can never produce a second one. Searching the raw caller arn for a bare needle instead matched any
- * principal that assumed any role with `--role-session-name <adminRole>`, granting admin access more broadly than intended.
+ * `:assumed-role/` and `/` within a slash-terminated copy of the caller arn. A role session name cannot contain `/` or `:`, so
+ * `:assumed-role/` appears exactly once in a real assumed-role arn, which makes the anchored match unambiguous.
  */
 export const iamAdminRoleCheckExpression = (fieldName?: string, adminCheckExpression?: Expression): Expression => {
   const returnStatement = fieldName ? raw(`#return($context.source.${fieldName})`) : raw('#return($util.toJson({}))');

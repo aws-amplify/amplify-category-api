@@ -105,16 +105,30 @@ describe('convertAuthorizationModesToTransformerAuthConfig', () => {
     expect(authSynthParameters.adminRoles?.[0]).toEqual('MyAdminRole/MySession');
   });
 
-  it('rejects an iam role arn string that can never match a caller identity', () => {
-    expect(() =>
-      convertAuthorizationModesToTransformerAuthConfig({
-        iamConfig: {
-          identityPoolId: 'identitypool123',
-          authenticatedUserRole: { roleName: 'testAuthRole' } as IRole,
-          unauthenticatedUserRole: { roleName: 'testUnauthRole' } as IRole,
-          allowListedRoles: ['arn:aws:iam::123456789012:role/MyAdminRole'],
-        },
-      }),
-    ).toThrow(/never appears in the caller identity/);
+  it('drops an iam role arn string that can never match a caller identity, with a warning', () => {
+    const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => undefined);
+    const { authSynthParameters } = convertAuthorizationModesToTransformerAuthConfig({
+      iamConfig: {
+        identityPoolId: 'identitypool123',
+        authenticatedUserRole: { roleName: 'testAuthRole' } as IRole,
+        unauthenticatedUserRole: { roleName: 'testUnauthRole' } as IRole,
+        allowListedRoles: ['arn:aws:iam::123456789012:role/MyAdminRole', 'KeptRole'],
+      },
+    });
+    expect(authSynthParameters.adminRoles).toEqual(['KeptRole']);
+    expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining('arn:aws:iam::123456789012:role/MyAdminRole'));
+    warnSpy.mockRestore();
+  });
+
+  it('passes a plain role name and an IRole through unchanged', () => {
+    const { authSynthParameters } = convertAuthorizationModesToTransformerAuthConfig({
+      iamConfig: {
+        identityPoolId: 'identitypool123',
+        authenticatedUserRole: { roleName: 'testAuthRole' } as IRole,
+        unauthenticatedUserRole: { roleName: 'testUnauthRole' } as IRole,
+        allowListedRoles: ['PlainRoleName', { roleName: 'RoleFromIRole' } as IRole],
+      },
+    });
+    expect(authSynthParameters.adminRoles).toEqual(['PlainRoleName', 'RoleFromIRole']);
   });
 });
