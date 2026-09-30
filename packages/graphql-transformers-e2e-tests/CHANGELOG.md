@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [9.1.5](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-graphql-transformers-e2e-tests@9.1.4...amplify-category-api-graphql-transformers-e2e-tests@9.1.5) (2026-09-30)
+
+**Note:** Version bump only for package amplify-category-api-graphql-transformers-e2e-tests
+
 ## [9.1.4](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-graphql-transformers-e2e-tests@9.1.3...amplify-category-api-graphql-transformers-e2e-tests@9.1.4) (2026-07-13)
 
 ### Bug Fixes

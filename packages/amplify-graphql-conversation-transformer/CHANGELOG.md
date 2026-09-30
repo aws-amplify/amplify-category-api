@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.1.17](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-conversation-transformer@1.1.16...@aws-amplify/graphql-conversation-transformer@1.1.17) (2026-09-30)
+
+### Bug Fixes
+
+- centralize GSI accessor helper ([#3511](https://github.com/aws-amplify/amplify-category-api/issues/3511)) ([2c4f617](https://github.com/aws-amplify/amplify-category-api/commit/2c4f6175798bcbb4f39ead4939e918a59e1e538e))
+
 ## [1.1.16](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-conversation-transformer@1.1.15...@aws-amplify/graphql-conversation-transformer@1.1.16) (2026-07-13)
 
 ### Bug Fixes

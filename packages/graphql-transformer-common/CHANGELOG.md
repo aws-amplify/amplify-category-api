@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.1.5](https://github.com/aws-amplify/amplify-category-api/compare/graphql-transformer-common@5.1.4...graphql-transformer-common@5.1.5) (2026-09-30)
+
+### Bug Fixes
+
+- **graphql-transformer-common:** reject multi-operator sort-key key conditions ([#3531](https://github.com/aws-amplify/amplify-category-api/issues/3531)) ([d103efb](https://github.com/aws-amplify/amplify-category-api/commit/d103efbc702911f8791fcd99846547c68d64a487))
+
 ## [5.1.4](https://github.com/aws-amplify/amplify-category-api/compare/graphql-transformer-common@5.1.3...graphql-transformer-common@5.1.4) (2026-02-05)
 
 **Note:** Version bump only for package graphql-transformer-common
