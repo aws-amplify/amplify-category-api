@@ -162,6 +162,16 @@ Composite keys with relationships, filtering on sort keys, and owner auth on rel
 
 **Exemplary issues:** [#273](https://github.com/aws-amplify/amplify-category-api/issues/273) (original cascade delete request — describes the manual deletion pain)
 
+Composite secondary indexes are sparse when a nullable sort-key component is
+absent on create or explicitly cleared on update. Automatically populated
+`createdAt` must not make another nullable component required. On update, supplied
+primary-key fields only identify the existing item, so overlapping secondary-index
+components do not trigger reconstruction. Mutable non-null index updates still
+require every component to avoid inconsistent derived keys.
+Resolver execution coverage is in
+`packages/amplify-graphql-index-transformer/src/__tests__/sparse-composite-index.test.ts`
+and `immutable-composite-index.test.ts` in that directory.
+
 ### Schema Migration / Destructive Changes
 
 Changing primary keys or removing relationship fields can fail during deployment because DynamoDB tables can't be modified in-place for certain key schema changes. The deployment rolls back with cryptic errors about resource state.

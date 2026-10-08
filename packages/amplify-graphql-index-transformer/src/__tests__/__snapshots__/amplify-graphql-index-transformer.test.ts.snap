@@ -657,13 +657,14 @@ $util.toJson({})
 $util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
 ## [End] Merge default values and inputs. **
 ## [Start] Validate create mutation for @index 'GSI'. **
+#set( $optionalIndexKeyFields = [] )
 #set( $hasSeenSomeKeyArg = false )
 #set( $keyFieldNames = [\\"kind\\", \\"date\\"] )
 #foreach( $keyFieldName in $keyFieldNames )
 #if( $mergedValues.containsKey(\\"$keyFieldName\\") ) #set( $hasSeenSomeKeyArg = true ) #end
 #end
 #foreach( $keyFieldName in $keyFieldNames )
-  #if( $hasSeenSomeKeyArg && !$mergedValues.containsKey(\\"$keyFieldName\\") )
+  #if( $hasSeenSomeKeyArg && !$mergedValues.containsKey(\\"$keyFieldName\\") && !$optionalIndexKeyFields.contains($keyFieldName) )
     $util.error(\\"When creating any part of the composite sort key for @index 'GSI', you must provide all fields for the key. Missing key: '$keyFieldName'.\\")
   #end
 #end
@@ -674,7 +675,11 @@ $util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
   $util.qr($ctx.stash.metadata.dynamodbNameOverrideMap.put('kind#date', \\"kindDate\\"))
 #end
 #if( $hasSeenSomeKeyArg )
-  $util.qr($ctx.args.input.put('kind#date',\\"\${mergedValues.kind}#\${mergedValues.date}\\"))
+  #if( !$util.isNull($mergedValues.kind) && !$util.isNull($mergedValues.date) )
+    $util.qr($ctx.args.input.put('kind#date',\\"\${mergedValues.kind}#\${mergedValues.date}\\"))
+  #else
+    $util.qr($ctx.args.input.remove('kind#date'))
+  #end
 #end
 {}",
   "Mutation.createTest.req.vtl": "## [Start] Create Request template. **
@@ -862,13 +867,14 @@ $util.toJson({})
 $util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
 ## [End] Merge default values and inputs. **
 ## [Start] Validate update mutation for @index 'GSI'. **
+#set( $optionalIndexKeyFields = [] )
 #set( $hasSeenSomeKeyArg = false )
 #set( $keyFieldNames = [\\"kind\\", \\"date\\"] )
 #foreach( $keyFieldName in $keyFieldNames )
 #if( $mergedValues.containsKey(\\"$keyFieldName\\") ) #set( $hasSeenSomeKeyArg = true ) #end
 #end
 #foreach( $keyFieldName in $keyFieldNames )
-  #if( $hasSeenSomeKeyArg && !$mergedValues.containsKey(\\"$keyFieldName\\") )
+  #if( $hasSeenSomeKeyArg && !$mergedValues.containsKey(\\"$keyFieldName\\") && !(false) )
     $util.error(\\"When updating any part of the composite sort key for @index 'GSI', you must provide all fields for the key. Missing key: '$keyFieldName'.\\")
   #end
 #end
@@ -879,7 +885,15 @@ $util.qr($mergedValues.putAll($util.defaultIfNull($ctx.args.input, {})))
   $util.qr($ctx.stash.metadata.dynamodbNameOverrideMap.put('kind#date', \\"kindDate\\"))
 #end
 #if( $hasSeenSomeKeyArg )
-  $util.qr($ctx.args.input.put('kind#date',\\"\${mergedValues.kind}#\${mergedValues.date}\\"))
+  #if( !$util.isNull($mergedValues.kind) && !$util.isNull($mergedValues.date) )
+    $util.qr($ctx.args.input.put('kind#date',\\"\${mergedValues.kind}#\${mergedValues.date}\\"))
+  #else
+    #foreach( $sparseKeyField in $keyFieldNames )
+      #if( $util.isNull($mergedValues.get($sparseKeyField)) )
+        $util.qr($ctx.args.input.put('kind#date', $mergedValues.get($sparseKeyField)))
+      #end
+    #end
+  #end
 #end
 {}",
   "Mutation.updateTest.req.vtl": "## [Start] Mutation Update resolver. **
