@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.6.2](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-core@3.6.1...@aws-amplify/graphql-transformer-core@3.6.2) (2026-09-30)
+
+### Bug Fixes
+
+- centralize GSI accessor helper ([#3511](https://github.com/aws-amplify/amplify-category-api/issues/3511)) ([2c4f617](https://github.com/aws-amplify/amplify-category-api/commit/2c4f6175798bcbb4f39ead4939e918a59e1e538e))
+- **graphql-transformer-core:** silence CfnResource#addDependency deprecation warning on aws-cdk-lib >= 2.262.0 ([#3517](https://github.com/aws-amplify/amplify-category-api/issues/3517)) ([3a537b9](https://github.com/aws-amplify/amplify-category-api/commit/3a537b92e2491d717fce5064ddaeaf5650b5c94c))
+
 ## [3.6.1](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-transformer-core@3.6.0...@aws-amplify/graphql-transformer-core@3.6.1) (2026-07-13)
 
 ### Bug Fixes

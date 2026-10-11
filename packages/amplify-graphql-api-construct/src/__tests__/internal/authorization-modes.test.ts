@@ -91,4 +91,44 @@ describe('convertAuthorizationModesToTransformerAuthConfig', () => {
     expect(authSynthParameters.adminRoles?.[1]).toEqual('allowListed2String');
     expect(authSynthParameters.adminRoles?.[2]).toEqual('adminRole3');
   });
+
+  it('reduces an assumed-role arn string to its role-name segment', () => {
+    const { authSynthParameters } = convertAuthorizationModesToTransformerAuthConfig({
+      iamConfig: {
+        identityPoolId: 'identitypool123',
+        authenticatedUserRole: { roleName: 'testAuthRole' } as IRole,
+        unauthenticatedUserRole: { roleName: 'testUnauthRole' } as IRole,
+        allowListedRoles: ['arn:aws:sts::123456789012:assumed-role/MyAdminRole/MySession'],
+      },
+    });
+    expect(authSynthParameters.adminRoles?.length).toEqual(1);
+    expect(authSynthParameters.adminRoles?.[0]).toEqual('MyAdminRole/MySession');
+  });
+
+  it('drops an iam role arn string that can never match a caller identity, with a warning', () => {
+    const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => undefined);
+    const { authSynthParameters } = convertAuthorizationModesToTransformerAuthConfig({
+      iamConfig: {
+        identityPoolId: 'identitypool123',
+        authenticatedUserRole: { roleName: 'testAuthRole' } as IRole,
+        unauthenticatedUserRole: { roleName: 'testUnauthRole' } as IRole,
+        allowListedRoles: ['arn:aws:iam::123456789012:role/MyAdminRole', 'KeptRole'],
+      },
+    });
+    expect(authSynthParameters.adminRoles).toEqual(['KeptRole']);
+    expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining('arn:aws:iam::123456789012:role/MyAdminRole'));
+    warnSpy.mockRestore();
+  });
+
+  it('passes a plain role name and an IRole through unchanged', () => {
+    const { authSynthParameters } = convertAuthorizationModesToTransformerAuthConfig({
+      iamConfig: {
+        identityPoolId: 'identitypool123',
+        authenticatedUserRole: { roleName: 'testAuthRole' } as IRole,
+        unauthenticatedUserRole: { roleName: 'testUnauthRole' } as IRole,
+        allowListedRoles: ['PlainRoleName', { roleName: 'RoleFromIRole' } as IRole],
+      },
+    });
+    expect(authSynthParameters.adminRoles).toEqual(['PlainRoleName', 'RoleFromIRole']);
+  });
 });

@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.22.3](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-api-construct@1.22.2...@aws-amplify/graphql-api-construct@1.22.3) (2026-09-30)
+
+### Bug Fixes
+
+- **graphql-auth-transformer:** match admin roles on the assumed-role name segment (align main with [#3528](https://github.com/aws-amplify/amplify-category-api/issues/3528)) ([#3539](https://github.com/aws-amplify/amplify-category-api/issues/3539)) ([aaf35d8](https://github.com/aws-amplify/amplify-category-api/commit/aaf35d84d86f0b6a339d112f1c51f4ffa54da05b))
+
 ## [1.22.2](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-api-construct@1.22.1...@aws-amplify/graphql-api-construct@1.22.2) (2026-07-13)
 
 **Note:** Version bump only for package @aws-amplify/graphql-api-construct

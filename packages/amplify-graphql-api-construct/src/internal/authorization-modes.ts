@@ -200,17 +200,50 @@ export const convertAuthorizationModesToTransformerAuthConfig = (authModes: Auth
 });
 
 /**
+ * An assumed-role caller arn is `arn:<partition>:sts::<account>:assumed-role/<RoleName>/<SessionName>`. The generated resolvers
+ * match each admin needle against the `:assumed-role/<...>/` segment of that arn, so a needle must be role-name shaped
+ * (`<RoleName>` or `<RoleName>/<SessionName>`), never a full arn.
+ */
+const STS_ASSUMED_ROLE_ARN_PATTERN = /^arn:[^:]*:sts::[^:]*:assumed-role\/(.+)$/;
+
+/**
+ * Normalizes an allow-listed role string into the role-name shape the generated resolvers compare against. An `assumed-role` arn
+ * is reduced to its `<RoleName>/<SessionName>` segment. An arn of any other form is dropped with a warning because it never
+ * appears in the caller identity that admin access is checked against, so keeping it would silently grant nothing. A role name
+ * (or an `IRole`, handled by the caller) is passed through unchanged.
+ * @param roleName the string value provided to `allowListedRoles`/`adminRoles`.
+ * @returns the role-name-shaped needle to pass into the transformer, or `undefined` if the entry was dropped.
+ */
+const normalizeAllowListedRoleName = (roleName: string): string | undefined => {
+  const assumedRoleArnMatch = STS_ASSUMED_ROLE_ARN_PATTERN.exec(roleName);
+  if (assumedRoleArnMatch) {
+    return assumedRoleArnMatch[1];
+  }
+  if (roleName.startsWith('arn:')) {
+    // eslint-disable-next-line no-console
+    console.warn(
+      `Ignoring allow-listed role "${roleName}": an arn never appears in the caller identity that admin access is checked ` +
+        'against, so it would grant nothing. Use the IAM role name instead, or pass the role as an IRole.',
+    );
+    return undefined;
+  }
+  return roleName;
+};
+
+/**
  * Merge iamConfig allowListedRoles with deprecated adminRoles property, converting to strings.
  * @param authModes the auth modes provided to the construct.
  * @returns the list of admin roles as strings to pass into the transformer
  */
 const getAllowListedRoles = (authModes: AuthorizationModes): string[] =>
-  [...(authModes?.iamConfig?.allowListedRoles ?? []), ...(authModes.adminRoles ?? [])].map((roleOrRoleName: IRole | string) => {
-    if (typeof roleOrRoleName === 'string' || roleOrRoleName instanceof String) {
-      return roleOrRoleName as string;
-    }
-    return roleOrRoleName.roleName;
-  });
+  [...(authModes?.iamConfig?.allowListedRoles ?? []), ...(authModes.adminRoles ?? [])]
+    .map((roleOrRoleName: IRole | string): string | undefined => {
+      if (typeof roleOrRoleName === 'string' || roleOrRoleName instanceof String) {
+        return normalizeAllowListedRoleName(roleOrRoleName as string);
+      }
+      return roleOrRoleName.roleName;
+    })
+    .filter((roleName): roleName is string => roleName !== undefined);
 
 /**
  * Transform the authorization config into the transformer synth parameters pertaining to auth.

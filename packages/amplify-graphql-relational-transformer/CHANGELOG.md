@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.1.16](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-relational-transformer@3.1.15...@aws-amplify/graphql-relational-transformer@3.1.16) (2026-09-30)
+
+### Bug Fixes
+
+- align filter input type name casing for index and relational query fields ([96f5b73](https://github.com/aws-amplify/amplify-category-api/commit/96f5b7300a5bc7287da742cde4e53a86860b77e1)), closes [aws-amplify/amplify-backend#3267](https://github.com/aws-amplify/amplify-backend/issues/3267)
+- centralize GSI accessor helper ([#3511](https://github.com/aws-amplify/amplify-category-api/issues/3511)) ([2c4f617](https://github.com/aws-amplify/amplify-category-api/commit/2c4f6175798bcbb4f39ead4939e918a59e1e538e))
+- **graphql-transformer-common:** reject multi-operator sort-key key conditions ([#3531](https://github.com/aws-amplify/amplify-category-api/issues/3531)) ([d103efb](https://github.com/aws-amplify/amplify-category-api/commit/d103efbc702911f8791fcd99846547c68d64a487))
+
 ## [3.1.15](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-relational-transformer@3.1.14...@aws-amplify/graphql-relational-transformer@3.1.15) (2026-07-13)
 
 ### Bug Fixes
