@@ -120,7 +120,10 @@ export type InitCDKProjectProps = {
 export const initCDKProject = async (cwd: string, templatePath: string, props?: InitCDKProjectProps): Promise<string> => {
   const { cdkVersion = '2.260.0', additionalDependencies = [] } = props ?? {};
 
-  await spawn(getNpxPath(), [`aws-cdk@${CDK_CLI_VERSION}`, 'init', 'app', '--language', 'typescript'], {
+  // Scaffold with the requested aws-cdk-lib version. Otherwise `cdk init` installs the newest aws-cdk-lib matching its template range,
+  // and the `npm install aws-cdk-lib@${cdkVersion}` below downgrades it in place, which can leave an unresolvable dependency tree (e.g.
+  // aws-cdk-lib@2.274.0 -> 2.260.0 fails with "Cannot find module '@aws-cdk/cloud-assembly-schema'").
+  await spawn(getNpxPath(), [`aws-cdk@${CDK_CLI_VERSION}`, 'init', 'app', '--language', 'typescript', '--lib-version', cdkVersion], {
     cwd,
     stripColors: true,
     // npx cdk does not work on verdaccio
