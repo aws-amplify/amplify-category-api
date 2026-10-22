@@ -5,3 +5,4 @@ export * from './conflict-resolution';
 export * from './asset-provider';
 export * from './codegen-assets';
 export * from './model-type-name';
+export * from './partitioning-nested-stack-provider';
