@@ -72,8 +72,11 @@ const appendToCDKContext = (projectPath: string, additionalContext: Record<strin
  * `aws-cdk` release matching a modern `aws-cdk-lib` version. Leaving the CLI floating means `cdk init` silently picks up upstream template
  * changes, which has broken e2e groups before (the template switched the synth command from `ts-node` to `tsc && tsx`, turning synth into a
  * whole-project typecheck).
+ *
+ * The CLI must also be new enough to read the cloud assembly schema emitted by `aws-cdk-lib@latest` (e.g. aws-cdk-lib 2.275.0 emits schema
+ * 55.0.0, which requires CLI >= 2.1146.1).
  */
-const CDK_CLI_VERSION = '2.1134.0';
+const CDK_CLI_VERSION = '2.1146.1';
 
 /**
  * Removes the whole-project `tsc` typecheck from the generated `cdk.json` synth command.
