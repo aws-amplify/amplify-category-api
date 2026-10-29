@@ -10523,6 +10523,30 @@ Amazon Web Services, Inc. (http://aws.amazon.com/).
 
 -----
 
+The following software may be included in this product: aws-ssl-profiles. A copy of the source code may be downloaded from https://github.com/mysqljs/aws-ssl-profiles. This software contains the following license and notice below:
+
+Copyright (c) 2024 Andrey Sidorov, Douglas Wilson, Weslley Araújo and contributors.
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+
+-----
+
 The following software may be included in this product: axe-core. A copy of the source code may be downloaded from https://github.com/dequelabs/axe-core.git. This software contains the following license and notice below:
 
 Mozilla Public License, version 2.0
@@ -18926,7 +18950,7 @@ SOFTWARE.
 
 -----
 
-The following software may be included in this product: iconv-lite. A copy of the source code may be downloaded from git://github.com/ashtuchkin/iconv-lite.git. This software contains the following license and notice below:
+The following software may be included in this product: iconv-lite. A copy of the source code may be downloaded from https://github.com/pillarjs/iconv-lite.git. This software contains the following license and notice below:
 
 Copyright (c) 2011 Alexander Shtuchkin
 
@@ -21311,6 +21335,32 @@ IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 -----
 
+The following software may be included in this product: lru.min. A copy of the source code may be downloaded from git+https://github.com/wellwelwel/lru.min.git. This software contains the following license and notice below:
+
+MIT License
+
+Copyright (c) 2024-current Weslley Araújo (@wellwelwel)
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+-----
+
 The following software may be included in this product: make-error. A copy of the source code may be downloaded from git://github.com/JsCommunity/make-error.git. This software contains the following license and notice below:
 
 Copyright 2014 Julien Fontanet
@@ -22197,7 +22247,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 -----
 
-The following software may be included in this product: mysql2. A copy of the source code may be downloaded from https://github.com/sidorares/node-mysql2. This software contains the following license and notice below:
+The following software may be included in this product: mysql2. A copy of the source code may be downloaded from git+https://github.com/sidorares/node-mysql2.git. This software contains the following license and notice below:
 
 Copyright (c) 2016 Andrey Sidorov (sidorares@yandex.ru) and contributors
 
@@ -22221,7 +22271,7 @@ Copyright (c) 2016 Andrey Sidorov (sidorares@yandex.ru) and contributors
 
 -----
 
-The following software may be included in this product: named-placeholders. A copy of the source code may be downloaded from https://github.com/sidorares/named-placeholders. This software contains the following license and notice below:
+The following software may be included in this product: named-placeholders. A copy of the source code may be downloaded from https://github.com/mysqljs/named-placeholders. This software contains the following license and notice below:
 
 The MIT License (MIT)
 
@@ -31766,6 +31816,32 @@ LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
 ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+-----
+
+The following software may be included in this product: sql-escaper. A copy of the source code may be downloaded from git+https://github.com/mysqljs/sql-escaper.git. This software contains the following license and notice below:
+
+MIT License
+
+Copyright (c) 2026 Weslley Araújo, Andrey Sidorov, Douglas Wilson, and contributors.
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
 
 -----
 
