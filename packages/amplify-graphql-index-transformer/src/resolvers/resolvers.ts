@@ -272,7 +272,14 @@ const modelObjectKeySnippet = (config: PrimaryKeyDirectiveConfiguration, isMutat
   return obj(modelObject);
 };
 
-export const ensureCompositeKeySnippet = (config: PrimaryKeyDirectiveConfiguration, conditionallySetSortKey: boolean): string => {
+export const ensureCompositeKeySnippet = (config: PrimaryKeyDirectiveConfiguration, conditionallySetSortKey: boolean): string =>
+  generateCompositeKeySnippet(config, conditionallySetSortKey);
+
+const generateCompositeKeySnippet = (
+  config: PrimaryKeyDirectiveConfiguration,
+  conditionallySetSortKey: boolean,
+  keyOperation?: 'create' | 'update',
+): string => {
   const { sortKeyFields } = config;
 
   if (sortKeyFields.length < 2) {
@@ -305,7 +312,24 @@ export const ensureCompositeKeySnippet = (config: PrimaryKeyDirectiveConfigurati
           ),
         ),
       ),
-      conditionallySetSortKey
+      keyOperation
+        ? iff(
+            ref(ResourceConstants.SNIPPETS.HasSeenSomeKeyArg),
+            ifElse(
+              raw(sortKeyFields.map((field) => `!$util.isNull($mergedValues.${field})`).join(' && ')),
+              qref(`$ctx.args.input.put('${condensedSortKey}',"${condensedSortKeyValue}")`),
+              keyOperation === 'create'
+                ? qref(`$ctx.args.input.remove('${condensedSortKey}')`)
+                : // Copy an actual null from the merged input so the update resolver removes the derived attribute.
+                  forEach(ref('sparseKeyField'), ref('keyFieldNames'), [
+                    iff(
+                      raw('$util.isNull($mergedValues.get($sparseKeyField))'),
+                      qref(`$ctx.args.input.put('${condensedSortKey}', $mergedValues.get($sparseKeyField))`),
+                    ),
+                  ]),
+            ),
+          )
+        : conditionallySetSortKey
         ? iff(
             ref(ResourceConstants.SNIPPETS.HasSeenSomeKeyArg),
             qref(`$ctx.args.input.put('${condensedSortKey}',"${condensedSortKeyValue}")`),
@@ -493,7 +517,7 @@ export const updateResolversForIndex = (
   // Ensure any composite sort key values and validate update operations to
   // protect the integrity of composite sort keys.
   if (isDynamoDB && createResolver) {
-    const checks = [validateIndexArgumentSnippet(config, 'create'), ensureCompositeKeySnippet(config, true)];
+    const checks = [validateIndexArgumentSnippet(config, 'create'), generateCompositeKeySnippet(config, true, 'create')];
 
     if (checks[0] || checks[1]) {
       addIndexToResolverSlot(createResolver, [mergeInputsAndDefaultsSnippet(), ...checks]);
@@ -501,7 +525,7 @@ export const updateResolversForIndex = (
   }
 
   if (isDynamoDB && updateResolver) {
-    const checks = [validateIndexArgumentSnippet(config, 'update'), ensureCompositeKeySnippet(config, true)];
+    const checks = [validateIndexArgumentSnippet(config, 'update'), generateCompositeKeySnippet(config, true, 'update')];
 
     if (checks[0] || checks[1]) {
       addIndexToResolverSlot(updateResolver, [mergeInputsAndDefaultsSnippet(), ...checks]);
@@ -590,10 +614,10 @@ export const makeQueryResolver = (
   }
 };
 
-// When issuing an create/update mutation that creates/changes one part of a composite sort key, you must supply the entire key so that the
-// underlying composite key can be resaved in a create/update operation. We only need to update for composite sort keys on secondary
-// indexes. There is some tight coupling between setting 'hasSeenSomeKeyArg' in this method and calling ensureCompositeKeySnippet with
-// conditionallySetSortKey = true That function expects this function to set 'hasSeenSomeKeyArg'.
+// Updates that supply mutable sort-key components must supply every component to keep the derived key consistent.
+// Primary-key fields only identify an existing item and must not trigger secondary-key reconstruction on update.
+// Creates may omit nullable components; explicitly clearing one removes secondary index membership.
+// Secondary-index key construction consumes HasSeenSomeKeyArg and keyFieldNames set by this validation.
 const validateIndexArgumentSnippet = (config: IndexDirectiveConfiguration, keyOperation: 'create' | 'update'): string => {
   const { name, sortKeyFields } = config;
 
@@ -601,16 +625,44 @@ const validateIndexArgumentSnippet = (config: IndexDirectiveConfiguration, keyOp
     return '';
   }
 
+  const optionalFields = config.sortKey.filter((field) => field.type.kind !== Kind.NON_NULL_TYPE).map((field) => field.name.value);
+  const explicitlyCleared =
+    optionalFields.map((field) => `($mergedValues.containsKey("${field}") && $util.isNull($mergedValues.${field}))`).join(' || ') ||
+    'false';
+  const missingRequired =
+    keyOperation === 'create' ? ' && !$optionalIndexKeyFields.contains($keyFieldName)' : ` && !(${explicitlyCleared})`;
+  const primaryKeySortKeys = config.primaryKeyField?.directives
+    ?.find((directive) => directive.name.value === 'primaryKey')
+    ?.arguments?.find((argument) => argument.name.value === 'sortKeyFields')?.value;
+  const primaryKeyFields = new Set([
+    config.primaryKeyField?.name.value ?? 'id',
+    ...(primaryKeySortKeys?.kind === Kind.LIST
+      ? primaryKeySortKeys.values.flatMap((value) => (value.kind === Kind.STRING ? [value.value] : []))
+      : []),
+  ]);
+  const immutableFieldCheck =
+    keyOperation === 'update'
+      ? sortKeyFields
+          .filter((field) => primaryKeyFields.has(field))
+          .map((field) => ` && $keyFieldName != "${field}"`)
+          .join('')
+      : '';
+
   return printBlock(`Validate ${keyOperation} mutation for @index '${name}'`)(
     compoundExpression([
+      set(ref('optionalIndexKeyFields'), list(optionalFields.map((field) => str(field)))),
       set(ref(ResourceConstants.SNIPPETS.HasSeenSomeKeyArg), bool(false)),
       set(ref('keyFieldNames'), list(sortKeyFields.map((f) => str(f)))),
       forEach(ref('keyFieldName'), ref('keyFieldNames'), [
-        iff(raw('$mergedValues.containsKey("$keyFieldName")'), set(ref(ResourceConstants.SNIPPETS.HasSeenSomeKeyArg), bool(true)), true),
+        iff(
+          raw(`$mergedValues.containsKey("$keyFieldName")${immutableFieldCheck}`),
+          set(ref(ResourceConstants.SNIPPETS.HasSeenSomeKeyArg), bool(true)),
+          true,
+        ),
       ]),
       forEach(ref('keyFieldName'), ref('keyFieldNames'), [
         iff(
-          raw(`$${ResourceConstants.SNIPPETS.HasSeenSomeKeyArg} && !$mergedValues.containsKey("$keyFieldName")`),
+          raw(`$${ResourceConstants.SNIPPETS.HasSeenSomeKeyArg} && !$mergedValues.containsKey("$keyFieldName")${missingRequired}`),
           raw(
             `$util.error("When ${keyOperation.replace(/.$/, 'ing')} any part of the composite sort key for @index '${name}',` +
               " you must provide all fields for the key. Missing key: '$keyFieldName'.\")",
