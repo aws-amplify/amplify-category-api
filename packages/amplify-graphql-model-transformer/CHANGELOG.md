@@ -3,6 +3,15 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.5.1](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-model-transformer@3.5.0...@aws-amplify/graphql-model-transformer@3.5.1) (2026-09-30)
+
+### Bug Fixes
+
+- **amplify-table:** populate per-GSI provisionedThroughput on billing-mode update to prevent null capacity UPDATE_FAILED ([#3518](https://github.com/aws-amplify/amplify-category-api/issues/3518)) ([354c33b](https://github.com/aws-amplify/amplify-category-api/commit/354c33bdc66240e1e1bad87fceca464b90856d03))
+- **graphql-model-transformer:** derive imported DynamoDB table key schema from [@primary](https://github.com/primary)Key ([#3523](https://github.com/aws-amplify/amplify-category-api/issues/3523)) ([4c67527](https://github.com/aws-amplify/amplify-category-api/commit/4c6752773b10d1e4951d39eb0828519f2efca8ef)), closes [aws-amplify/amplify-category-api#3489](https://github.com/aws-amplify/amplify-category-api/issues/3489) [aws-amplify/amplify-backend#3281](https://github.com/aws-amplify/amplify-backend/issues/3281)
+- **graphql-model-transformer:** stop pinning DynamoDB table waiter execution name to CFN RequestId ([#3521](https://github.com/aws-amplify/amplify-category-api/issues/3521)) ([caf03c8](https://github.com/aws-amplify/amplify-category-api/commit/caf03c8a4877fa52e57e4af2550399e92d3cf1f6))
+- **graphql-transformer-core:** silence CfnResource#addDependency deprecation warning on aws-cdk-lib >= 2.262.0 ([#3517](https://github.com/aws-amplify/amplify-category-api/issues/3517)) ([3a537b9](https://github.com/aws-amplify/amplify-category-api/commit/3a537b92e2491d717fce5064ddaeaf5650b5c94c))
+
 # [3.5.0](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-model-transformer@3.4.2...@aws-amplify/graphql-model-transformer@3.5.0) (2026-07-13)
 
 ### Bug Fixes

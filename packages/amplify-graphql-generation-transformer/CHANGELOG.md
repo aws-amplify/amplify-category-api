@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.2.9](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-generation-transformer@1.2.8...@aws-amplify/graphql-generation-transformer@1.2.9) (2026-09-30)
+
+### Bug Fixes
+
+- **generation-transformer:** grant inference-profile IAM for cross-region Bedrock models ([46e49e6](https://github.com/aws-amplify/amplify-category-api/commit/46e49e60d6a86a1bfd9f42396e26b282e55883e7))
+
 ## [1.2.8](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-generation-transformer@1.2.7...@aws-amplify/graphql-generation-transformer@1.2.8) (2026-07-13)
 
 **Note:** Version bump only for package @aws-amplify/graphql-generation-transformer

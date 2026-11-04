@@ -72,8 +72,11 @@ const appendToCDKContext = (projectPath: string, additionalContext: Record<strin
  * `aws-cdk` release matching a modern `aws-cdk-lib` version. Leaving the CLI floating means `cdk init` silently picks up upstream template
  * changes, which has broken e2e groups before (the template switched the synth command from `ts-node` to `tsc && tsx`, turning synth into a
  * whole-project typecheck).
+ *
+ * The CLI must also be new enough to read the cloud assembly schema emitted by `aws-cdk-lib@latest` (e.g. aws-cdk-lib 2.275.0 emits schema
+ * 55.0.0, which requires CLI >= 2.1146.1).
  */
-const CDK_CLI_VERSION = '2.1134.0';
+const CDK_CLI_VERSION = '2.1146.1';
 
 /**
  * Removes the whole-project `tsc` typecheck from the generated `cdk.json` synth command.
@@ -120,7 +123,10 @@ export type InitCDKProjectProps = {
 export const initCDKProject = async (cwd: string, templatePath: string, props?: InitCDKProjectProps): Promise<string> => {
   const { cdkVersion = '2.260.0', additionalDependencies = [] } = props ?? {};
 
-  await spawn(getNpxPath(), [`aws-cdk@${CDK_CLI_VERSION}`, 'init', 'app', '--language', 'typescript'], {
+  // Scaffold with the requested aws-cdk-lib version. Otherwise `cdk init` installs the newest aws-cdk-lib matching its template range,
+  // and the `npm install aws-cdk-lib@${cdkVersion}` below downgrades it in place, which can leave an unresolvable dependency tree (e.g.
+  // aws-cdk-lib@2.274.0 -> 2.260.0 fails with "Cannot find module '@aws-cdk/cloud-assembly-schema'").
+  await spawn(getNpxPath(), [`aws-cdk@${CDK_CLI_VERSION}`, 'init', 'app', '--language', 'typescript', '--lib-version', cdkVersion], {
     cwd,
     stripColors: true,
     // npx cdk does not work on verdaccio
