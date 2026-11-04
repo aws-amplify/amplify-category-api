@@ -51,14 +51,14 @@ const PARTITION_KEY_VALUE = 'partitionKeyValue';
 export class DDBRelationalResolverGenerator extends RelationalResolverGenerator {
   makeExpression = (keySchema: any[], connectionAttributes: string[]): ObjectNode => {
     if (keySchema[1] && connectionAttributes[1]) {
-      let condensedSortKeyValue;
+      let condensedSortKeyValue = `$${SORT_KEY_VALUE}0`;
 
       if (connectionAttributes.length > 2) {
         const rangeKeyFields = connectionAttributes.slice(1);
 
-        condensedSortKeyValue = rangeKeyFields
+        condensedSortKeyValue = `"${rangeKeyFields
           .map((keyField, idx) => `\${${SORT_KEY_VALUE}${idx}}`)
-          .join(ModelResourceIDs.ModelCompositeKeySeparator());
+          .join(ModelResourceIDs.ModelCompositeKeySeparator())}"`;
       }
 
       return obj({
@@ -69,7 +69,7 @@ export class DDBRelationalResolverGenerator extends RelationalResolverGenerator 
         }),
         expressionValues: obj({
           ':partitionKey': ref(`util.dynamodb.toDynamoDB($${PARTITION_KEY_VALUE})`),
-          ':sortKey': ref(`util.dynamodb.toDynamoDB(${condensedSortKeyValue ? `"${condensedSortKeyValue}"` : `$${SORT_KEY_VALUE}0`})`),
+          ':sortKey': ref(`util.dynamodb.toDynamoDB(${condensedSortKeyValue})`),
         }),
       });
     }
