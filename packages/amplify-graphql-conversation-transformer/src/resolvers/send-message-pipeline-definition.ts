@@ -134,4 +134,4 @@ function templateGenerator(slotName: string) {
   return createS3AssetMappingTemplateGenerator('Mutation', slotName, fieldName);
 }
 
-const streamingSelectionSet = `associatedUserMessageId contentBlockDeltaIndex contentBlockDoneAtIndex contentBlockIndex contentBlockText contentBlockToolUse { toolUseId name input } conversationId id stopReason owner errors { errorType message } p`;
+const streamingSelectionSet = `associatedUserMessageId contentBlockDeltaIndex contentBlockDoneAtIndex contentBlockIndex contentBlockText contentBlockToolUse { toolUseId name input } conversationId id stopReason owner errors { errorType message } p metrics { latencyMs } usage { inputTokens outputTokens totalTokens }`;

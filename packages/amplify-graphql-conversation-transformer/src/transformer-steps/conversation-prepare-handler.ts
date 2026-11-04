@@ -2,7 +2,12 @@ import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { BelongsToTransformer, HasManyTransformer } from '@aws-amplify/graphql-relational-transformer';
 import { DDB_AMPLIFY_MANAGED_DATASOURCE_STRATEGY, InvalidTransformerError } from '@aws-amplify/graphql-transformer-core';
 import { ConversationDirectiveConfiguration } from '../conversation-directive-configuration';
-import { constructStreamResponseType, createConversationTurnErrorInput } from '../graphql-types/message-model';
+import {
+  constructStreamResponseType,
+  createConversationTurnErrorInput,
+  constructMetricsType,
+  constructUsageType,
+} from '../graphql-types/message-model';
 import { TransformerAuthProvider, TransformerPrepareStepContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 
 /**
@@ -50,6 +55,8 @@ export class ConversationPrepareHandler {
     // add once per schema
     const conversationTurnErrorInput = createConversationTurnErrorInput();
     ctx.output.addInput(conversationTurnErrorInput);
+    ctx.output.addObject(constructMetricsType());
+    ctx.output.addObject(constructUsageType());
 
     for (const directive of directives) {
       this.prepareResourcesForDirective(directive, ctx);

@@ -12,6 +12,8 @@ export function request(ctx) {
     associatedUserMessageId,
     accumulatedTurnContent,
     errors,
+    metrics,
+    usage,
   } = ctx.args.input;
 
   const { owner } = ctx.args;
@@ -28,7 +30,7 @@ export function request(ctx) {
   const { createdAt, updatedAt } = ctx.stash.defaultValues;
 
   const assistantResponseId = `${associatedUserMessageId}#response`;
-  const expression = 'SET #typename = :typename, #conversationId = :conversationId, #associatedUserMessageId = :associatedUserMessageId, #role = :role, #content = :content, #owner = :owner, #createdAt = if_not_exists(#createdAt, :createdAt), #updatedAt = :updatedAt';
+  let expression = 'SET #typename = :typename, #conversationId = :conversationId, #associatedUserMessageId = :associatedUserMessageId, #role = :role, #content = :content, #owner = :owner, #createdAt = if_not_exists(#createdAt, :createdAt), #updatedAt = :updatedAt';
 
   const expressionValues = util.dynamodb.toMapValues({
     ':typename': '[[CONVERSATION_MESSAGE_TYPE_NAME]]',
@@ -52,6 +54,18 @@ export function request(ctx) {
     '#createdAt': 'createdAt',
     '#updatedAt': 'updatedAt',
   };
+
+  if (metrics) {
+    expression += ', #metrics = :metrics';
+    expressionValues[':metrics'] = metrics;
+    expressionNames['#metrics'] = 'metrics';
+  }
+
+  if (usage) {
+    expression += ', #usage = :usage';
+    expressionValues[':usage'] = usage;
+    expressionNames['#usage'] = 'usage';
+  }
 
   return {
     operation: 'UpdateItem',
