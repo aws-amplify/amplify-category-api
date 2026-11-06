@@ -21,7 +21,8 @@
     "build-tests": "tsc --build tsconfig.tests.json",
     "setup-profile": "ts-node ./src/configure_tests.ts",
     "clean-stale-test-buckets": "ts-node ./src/cleanup-stale-test-buckets.ts",
-    "clean-e2e-resources": "ts-node ./src/cleanup-e2e-resources.ts"
+    "clean-e2e-resources": "ts-node ./src/cleanup-e2e-resources.ts",
+    "test": "jest --config jest.unit.config.js"
   },
   "dependencies": {
     "@aws-amplify/amplify-app": "^5.0.35",
@@ -91,7 +92,8 @@
     "testRegex": "(src/__tests__/.*|\\.(test|spec))\\.(ts|tsx|js)$",
     "testPathIgnorePatterns": [
       "/node_modules/",
-      "lib"
+      "lib",
+      "src/__unit_tests__"
     ],
     "collectCoverage": false,
     "collectCoverageFrom": [
