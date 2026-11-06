@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.16.8](https://github.com/aws-amplify/amplify-category-api/compare/amplify-graphql-api-construct-tests@1.16.7...amplify-graphql-api-construct-tests@1.16.8) (2026-11-06)
+
+### Bug Fixes
+
+- **amplify-graphql-api-construct-tests:** bump pinned cdk CLI to 2.1146.1 ([7efb8e9](https://github.com/aws-amplify/amplify-category-api/commit/7efb8e9bad7c0b1e2a25be69d0b5165b68316496))
+- **e2e:** pass --lib-version to cdk init to avoid aws-cdk-lib downgrade ([#3544](https://github.com/aws-amplify/amplify-category-api/issues/3544)) ([edb5c2a](https://github.com/aws-amplify/amplify-category-api/commit/edb5c2a9f10b3fd60951bdde2b990fdeda159a05))
+
 ## [1.16.7](https://github.com/aws-amplify/amplify-category-api/compare/amplify-graphql-api-construct-tests@1.16.6...amplify-graphql-api-construct-tests@1.16.7) (2026-09-30)
 
 ### Bug Fixes
