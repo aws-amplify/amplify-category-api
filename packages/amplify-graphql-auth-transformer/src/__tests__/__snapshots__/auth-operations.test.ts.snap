@@ -50,6 +50,38 @@ $util.unauthorized()
   #foreach( $deniedField in $util.list.copyAndRemoveAll($inputFields, $allowedFields) )
     $util.qr($deniedFields.put($deniedField, \\"\\"))
   #end
+  #if( !$util.isNull($ctx.args.condition) )
+    #set( $allowedConditionFields = [] )
+    $util.qr($allowedConditionFields.addAll($allowedFields))
+    $util.qr($allowedConditionFields.addAll($nullAllowedFields))
+    #set( $conditionCombinators = [\\"and\\",\\"or\\",\\"not\\"] )
+    #set( $conditionWorklist = [$ctx.args.condition] )
+    #foreach( $iteration in [0..255] )
+    #if( $conditionWorklist.isEmpty() )
+      #break
+    #end
+    #set( $currentCondition = $conditionWorklist.remove($conditionWorklist.size() - 1) )
+    #foreach( $conditionEntry in $currentCondition.entrySet() )
+      #if( $conditionCombinators.contains($conditionEntry.key) )
+        #if( $util.isList($conditionEntry.value) )
+          #foreach( $nestedCondition in $conditionEntry.value )
+            #if( $util.isMap($nestedCondition) )
+              $util.qr($conditionWorklist.add($nestedCondition))
+            #end
+          #end
+        #else
+          #if( $util.isMap($conditionEntry.value) )
+            $util.qr($conditionWorklist.add($conditionEntry.value))
+          #end
+        #end
+      #else
+        #if( !$allowedConditionFields.contains($conditionEntry.key) )
+          $util.qr($deniedFields.put($conditionEntry.key, \\"\\"))
+        #end
+      #end
+    #end
+    #end
+  #end
 #end
 #if( $deniedFields.keySet().size() > 0 )
   $util.error(\\"Unauthorized on \${deniedFields.keySet()}\\", \\"Unauthorized\\")

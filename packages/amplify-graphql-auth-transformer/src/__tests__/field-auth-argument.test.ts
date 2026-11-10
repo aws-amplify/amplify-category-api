@@ -655,3 +655,43 @@ describe('with identity claim feature flag disabled', () => {
     });
   });
 });
+
+test('update auth denies a mutation condition on a field the caller cannot access', () => {
+  // Regression test: field-level @auth on update must authorize fields named in
+  // the mutation `condition`, not only those in `input`. Otherwise a caller who
+  // can update the record can probe an unreadable field through the DynamoDB
+  // conditional check (success vs ConditionalCheckFailed) and recover its value.
+  const validSchema = `
+    type Note @model @auth(rules: [{ allow: owner }, { allow: groups, groups: ["admin"] }]) {
+      id: ID!
+      owner: String
+      title: String
+      adminSecret: String @auth(rules: [{ allow: groups, groups: ["admin"] }])
+    }`;
+  const authConfig: AppSyncAuthConfiguration = {
+    defaultAuthentication: {
+      authenticationType: 'AMAZON_COGNITO_USER_POOLS',
+    },
+    additionalAuthenticationProviders: [],
+  };
+  const out = testTransform({
+    schema: validSchema,
+    authConfig,
+    transformers: [new ModelTransformer(), new AuthTransformer()],
+  });
+  expect(out).toBeDefined();
+  // The owner/group update authorization runs in the auth response resolver,
+  // after the existing item has been fetched (owner auth needs ctx.result).
+  const updateAuth = out.resolvers['Mutation.updateNote.auth.1.res.vtl'];
+  expect(updateAuth).toBeDefined();
+  // The condition-field access check is emitted, and uses the allowed-field set.
+  expect(updateAuth).toContain('#if( !$util.isNull($ctx.args.condition) )');
+  expect(updateAuth).toContain('$util.qr($allowedConditionFields.addAll($allowedFields))');
+  expect(updateAuth).toContain('$util.qr($allowedConditionFields.addAll($nullAllowedFields))');
+  // A combinator key is recursed into, a field key outside the allowed set is denied.
+  expect(updateAuth).toContain('#set( $conditionCombinators = ["and","or","not"] )');
+  expect(updateAuth).toContain('#if( !$allowedConditionFields.contains($conditionEntry.key) )');
+  expect(updateAuth).toContain('$util.qr($deniedFields.put($conditionEntry.key, ""))');
+  // The denied set still feeds the existing Unauthorized error.
+  expect(updateAuth).toContain('$util.error("Unauthorized on ${deniedFields.keySet()}", "Unauthorized")');
+});

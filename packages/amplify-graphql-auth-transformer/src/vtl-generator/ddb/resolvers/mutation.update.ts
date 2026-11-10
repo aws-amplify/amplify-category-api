@@ -38,6 +38,75 @@ import {
   DENIED_FIELDS,
 } from '../../../utils';
 import { setHasAuthExpression } from '../../common';
+
+// Combinator keys of a ModelXConditionInput. These do not name a field; their
+// values are nested condition maps (`not`) or lists of them (`and`/`or`).
+const CONDITION_COMBINATORS = ['and', 'or', 'not'];
+
+/**
+ * VTL that denies a field-restricted caller any `condition` referencing a field
+ * outside their allowed set.
+ *
+ * `ctx.args.condition` is a map whose keys are either field names or the logical
+ * combinators `and` / `or` / `not`. A field key not in `$allowedFields` or
+ * `$nullAllowedFields` is an access the caller does not have, so it is added to
+ * `$deniedFields` and the existing `Unauthorized on ...` error (emitted right
+ * after this block) fires.
+ *
+ * Combinators nest more condition maps, so a worklist seeds from the top-level
+ * condition and, for each combinator encountered, pushes its child map(s) back
+ * onto the worklist. VTL (Apache Velocity) has no real recursion; the worklist is
+ * drained by a bounded loop so an arbitrarily deep combinator tree is still fully
+ * walked without relying on call depth.
+ */
+const conditionFieldAccessCheck = (): Expression[] => [
+  iff(
+    not(methodCall(ref('util.isNull'), ref('ctx.args.condition'))),
+    compoundExpression([
+      // allowed := allowedFields + nullAllowedFields (the fields this caller may touch)
+      set(ref('allowedConditionFields'), list([])),
+      qref(methodCall(ref('allowedConditionFields.addAll'), ref(ALLOWED_FIELDS))),
+      qref(methodCall(ref('allowedConditionFields.addAll'), ref(NULL_ALLOWED_FIELDS))),
+      set(ref('conditionCombinators'), raw(JSON.stringify(CONDITION_COMBINATORS))),
+      // worklist of condition maps still to inspect, seeded with the top-level condition
+      set(ref('conditionWorklist'), list([ref('ctx.args.condition')])),
+      // Bounded drain of the worklist. Velocity's #foreach snapshots its collection,
+      // so a map added mid-loop would not be visited; instead iterate a fixed range
+      // and pop one map per turn, stopping early once the worklist is empty. The cap
+      // bounds work on a pathologically nested condition. The range literal and the
+      // early #break are emitted raw because the mapping-template `ref` helper prefixes
+      // `$`, which a Velocity range `[0..N]` and the `#break` directive must not carry.
+      raw('#foreach( $iteration in [0..255] )'),
+      iff(ref('conditionWorklist.isEmpty()'), raw('#break')),
+      set(ref('currentCondition'), ref('conditionWorklist.remove($conditionWorklist.size() - 1)')),
+      forEach(ref('conditionEntry'), ref('currentCondition.entrySet()'), [
+        ifElse(
+          methodCall(ref('conditionCombinators.contains'), ref('conditionEntry.key')),
+          // combinator: `and`/`or` hold a list of condition maps, `not` holds one map
+          ifElse(
+            methodCall(ref('util.isList'), ref('conditionEntry.value')),
+            forEach(ref('nestedCondition'), ref('conditionEntry.value'), [
+              iff(
+                methodCall(ref('util.isMap'), ref('nestedCondition')),
+                qref(methodCall(ref('conditionWorklist.add'), ref('nestedCondition'))),
+              ),
+            ]),
+            iff(
+              methodCall(ref('util.isMap'), ref('conditionEntry.value')),
+              qref(methodCall(ref('conditionWorklist.add'), ref('conditionEntry.value'))),
+            ),
+          ),
+          // field key: deny it if the caller is not allowed to access that field
+          iff(
+            not(methodCall(ref('allowedConditionFields.contains'), ref('conditionEntry.key'))),
+            qref(methodCall(ref(`${DENIED_FIELDS}.put`), ref('conditionEntry.key'), str(''))),
+          ),
+        ),
+      ]),
+      raw('#end'),
+    ]),
+  ),
+];
 import {
   getIdentityClaimExp,
   responseCheckForErrors,
@@ -338,6 +407,15 @@ export const generateAuthExpressionForUpdate = (
         forEach(ref('deniedField'), ref(`util.list.copyAndRemoveAll($inputFields, $${ALLOWED_FIELDS})`), [
           qref(methodCall(ref(`${DENIED_FIELDS}.put`), ref('deniedField'), str(''))),
         ]),
+        // A field-restricted caller must not use `condition` to probe fields they
+        // cannot access: a DynamoDB conditional check leaks whether a guessed value
+        // matched via success vs ConditionalCheckFailedException, recovering the value
+        // of a field the caller is not authorized for. The `input` sweep above does
+        // not cover `condition`, so collect every field named in `ctx.args.condition`
+        // (skipping the `and`/`or`/`not` combinators, which nest more field maps) and
+        // deny any that is outside the caller's allowed set. The worklist walks the
+        // nested combinators so a condition wrapped in `and`/`or`/`not` is covered too.
+        ...conditionFieldAccessCheck(),
       ]),
     ),
     iff(
