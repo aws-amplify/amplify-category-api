@@ -197,35 +197,39 @@ $util.unauthorized()
     $util.qr($deniedFields.put($deniedField, \\"\\"))
   #end
   #if( !$util.isNull($ctx.args.condition) )
+    #set( $conditionMap = $util.parseJson($util.toJson($ctx.args.condition)) )
     #set( $allowedConditionFields = [] )
     $util.qr($allowedConditionFields.addAll($allowedFields))
     $util.qr($allowedConditionFields.addAll($nullAllowedFields))
     #set( $conditionCombinators = [\\"and\\",\\"or\\",\\"not\\"] )
-    #set( $conditionWorklist = [$ctx.args.condition] )
-    #foreach( $iteration in [0..255] )
-    #if( $conditionWorklist.isEmpty() )
-      #break
-    #end
-    #set( $currentCondition = $conditionWorklist.remove($conditionWorklist.size() - 1) )
-    #foreach( $conditionEntry in $currentCondition.entrySet() )
-      #if( $conditionCombinators.contains($conditionEntry.key) )
-        #if( $util.isList($conditionEntry.value) )
-          #foreach( $nestedCondition in $conditionEntry.value )
-            #if( $util.isMap($nestedCondition) )
-              $util.qr($conditionWorklist.add($nestedCondition))
+    #set( $conditionLevel = [$conditionMap] )
+    #foreach( $depth in [0..9] )
+    #set( $nextConditionLevel = [] )
+    #foreach( $levelMap in $conditionLevel )
+      #foreach( $conditionEntry in $levelMap.entrySet() )
+        #if( $conditionCombinators.contains($conditionEntry.key) )
+          #if( $util.isList($conditionEntry.value) )
+            #foreach( $nestedCondition in $conditionEntry.value )
+              #if( $util.isMap($nestedCondition) )
+                $util.qr($nextConditionLevel.add($nestedCondition))
+              #end
+            #end
+          #else
+            #if( $util.isMap($conditionEntry.value) )
+              $util.qr($nextConditionLevel.add($conditionEntry.value))
             #end
           #end
         #else
-          #if( $util.isMap($conditionEntry.value) )
-            $util.qr($conditionWorklist.add($conditionEntry.value))
+          #if( !$allowedConditionFields.contains($conditionEntry.key) )
+            $util.qr($deniedFields.put($conditionEntry.key, \\"\\"))
           #end
-        #end
-      #else
-        #if( !$allowedConditionFields.contains($conditionEntry.key) )
-          $util.qr($deniedFields.put($conditionEntry.key, \\"\\"))
         #end
       #end
     #end
+    #if( $nextConditionLevel.isEmpty() )
+      #break
+    #end
+    #set( $conditionLevel = $nextConditionLevel )
     #end
   #end
 #end
@@ -518,35 +522,39 @@ $util.unauthorized()
     $util.qr($deniedFields.put($deniedField, \\"\\"))
   #end
   #if( !$util.isNull($ctx.args.condition) )
+    #set( $conditionMap = $util.parseJson($util.toJson($ctx.args.condition)) )
     #set( $allowedConditionFields = [] )
     $util.qr($allowedConditionFields.addAll($allowedFields))
     $util.qr($allowedConditionFields.addAll($nullAllowedFields))
     #set( $conditionCombinators = [\\"and\\",\\"or\\",\\"not\\"] )
-    #set( $conditionWorklist = [$ctx.args.condition] )
-    #foreach( $iteration in [0..255] )
-    #if( $conditionWorklist.isEmpty() )
-      #break
-    #end
-    #set( $currentCondition = $conditionWorklist.remove($conditionWorklist.size() - 1) )
-    #foreach( $conditionEntry in $currentCondition.entrySet() )
-      #if( $conditionCombinators.contains($conditionEntry.key) )
-        #if( $util.isList($conditionEntry.value) )
-          #foreach( $nestedCondition in $conditionEntry.value )
-            #if( $util.isMap($nestedCondition) )
-              $util.qr($conditionWorklist.add($nestedCondition))
+    #set( $conditionLevel = [$conditionMap] )
+    #foreach( $depth in [0..9] )
+    #set( $nextConditionLevel = [] )
+    #foreach( $levelMap in $conditionLevel )
+      #foreach( $conditionEntry in $levelMap.entrySet() )
+        #if( $conditionCombinators.contains($conditionEntry.key) )
+          #if( $util.isList($conditionEntry.value) )
+            #foreach( $nestedCondition in $conditionEntry.value )
+              #if( $util.isMap($nestedCondition) )
+                $util.qr($nextConditionLevel.add($nestedCondition))
+              #end
+            #end
+          #else
+            #if( $util.isMap($conditionEntry.value) )
+              $util.qr($nextConditionLevel.add($conditionEntry.value))
             #end
           #end
         #else
-          #if( $util.isMap($conditionEntry.value) )
-            $util.qr($conditionWorklist.add($conditionEntry.value))
+          #if( !$allowedConditionFields.contains($conditionEntry.key) )
+            $util.qr($deniedFields.put($conditionEntry.key, \\"\\"))
           #end
-        #end
-      #else
-        #if( !$allowedConditionFields.contains($conditionEntry.key) )
-          $util.qr($deniedFields.put($conditionEntry.key, \\"\\"))
         #end
       #end
     #end
+    #if( $nextConditionLevel.isEmpty() )
+      #break
+    #end
+    #set( $conditionLevel = $nextConditionLevel )
     #end
   #end
 #end
@@ -799,35 +807,39 @@ $util.unauthorized()
     $util.qr($deniedFields.put($deniedField, \\"\\"))
   #end
   #if( !$util.isNull($ctx.args.condition) )
+    #set( $conditionMap = $util.parseJson($util.toJson($ctx.args.condition)) )
     #set( $allowedConditionFields = [] )
     $util.qr($allowedConditionFields.addAll($allowedFields))
     $util.qr($allowedConditionFields.addAll($nullAllowedFields))
     #set( $conditionCombinators = [\\"and\\",\\"or\\",\\"not\\"] )
-    #set( $conditionWorklist = [$ctx.args.condition] )
-    #foreach( $iteration in [0..255] )
-    #if( $conditionWorklist.isEmpty() )
-      #break
-    #end
-    #set( $currentCondition = $conditionWorklist.remove($conditionWorklist.size() - 1) )
-    #foreach( $conditionEntry in $currentCondition.entrySet() )
-      #if( $conditionCombinators.contains($conditionEntry.key) )
-        #if( $util.isList($conditionEntry.value) )
-          #foreach( $nestedCondition in $conditionEntry.value )
-            #if( $util.isMap($nestedCondition) )
-              $util.qr($conditionWorklist.add($nestedCondition))
+    #set( $conditionLevel = [$conditionMap] )
+    #foreach( $depth in [0..9] )
+    #set( $nextConditionLevel = [] )
+    #foreach( $levelMap in $conditionLevel )
+      #foreach( $conditionEntry in $levelMap.entrySet() )
+        #if( $conditionCombinators.contains($conditionEntry.key) )
+          #if( $util.isList($conditionEntry.value) )
+            #foreach( $nestedCondition in $conditionEntry.value )
+              #if( $util.isMap($nestedCondition) )
+                $util.qr($nextConditionLevel.add($nestedCondition))
+              #end
+            #end
+          #else
+            #if( $util.isMap($conditionEntry.value) )
+              $util.qr($nextConditionLevel.add($conditionEntry.value))
             #end
           #end
         #else
-          #if( $util.isMap($conditionEntry.value) )
-            $util.qr($conditionWorklist.add($conditionEntry.value))
+          #if( !$allowedConditionFields.contains($conditionEntry.key) )
+            $util.qr($deniedFields.put($conditionEntry.key, \\"\\"))
           #end
-        #end
-      #else
-        #if( !$allowedConditionFields.contains($conditionEntry.key) )
-          $util.qr($deniedFields.put($conditionEntry.key, \\"\\"))
         #end
       #end
     #end
+    #if( $nextConditionLevel.isEmpty() )
+      #break
+    #end
+    #set( $conditionLevel = $nextConditionLevel )
     #end
   #end
 #end
@@ -1141,35 +1153,39 @@ $util.unauthorized()
     $util.qr($deniedFields.put($deniedField, \\"\\"))
   #end
   #if( !$util.isNull($ctx.args.condition) )
+    #set( $conditionMap = $util.parseJson($util.toJson($ctx.args.condition)) )
     #set( $allowedConditionFields = [] )
     $util.qr($allowedConditionFields.addAll($allowedFields))
     $util.qr($allowedConditionFields.addAll($nullAllowedFields))
     #set( $conditionCombinators = [\\"and\\",\\"or\\",\\"not\\"] )
-    #set( $conditionWorklist = [$ctx.args.condition] )
-    #foreach( $iteration in [0..255] )
-    #if( $conditionWorklist.isEmpty() )
-      #break
-    #end
-    #set( $currentCondition = $conditionWorklist.remove($conditionWorklist.size() - 1) )
-    #foreach( $conditionEntry in $currentCondition.entrySet() )
-      #if( $conditionCombinators.contains($conditionEntry.key) )
-        #if( $util.isList($conditionEntry.value) )
-          #foreach( $nestedCondition in $conditionEntry.value )
-            #if( $util.isMap($nestedCondition) )
-              $util.qr($conditionWorklist.add($nestedCondition))
+    #set( $conditionLevel = [$conditionMap] )
+    #foreach( $depth in [0..9] )
+    #set( $nextConditionLevel = [] )
+    #foreach( $levelMap in $conditionLevel )
+      #foreach( $conditionEntry in $levelMap.entrySet() )
+        #if( $conditionCombinators.contains($conditionEntry.key) )
+          #if( $util.isList($conditionEntry.value) )
+            #foreach( $nestedCondition in $conditionEntry.value )
+              #if( $util.isMap($nestedCondition) )
+                $util.qr($nextConditionLevel.add($nestedCondition))
+              #end
+            #end
+          #else
+            #if( $util.isMap($conditionEntry.value) )
+              $util.qr($nextConditionLevel.add($conditionEntry.value))
             #end
           #end
         #else
-          #if( $util.isMap($conditionEntry.value) )
-            $util.qr($conditionWorklist.add($conditionEntry.value))
+          #if( !$allowedConditionFields.contains($conditionEntry.key) )
+            $util.qr($deniedFields.put($conditionEntry.key, \\"\\"))
           #end
-        #end
-      #else
-        #if( !$allowedConditionFields.contains($conditionEntry.key) )
-          $util.qr($deniedFields.put($conditionEntry.key, \\"\\"))
         #end
       #end
     #end
+    #if( $nextConditionLevel.isEmpty() )
+      #break
+    #end
+    #set( $conditionLevel = $nextConditionLevel )
     #end
   #end
 #end
@@ -1482,35 +1498,39 @@ $util.unauthorized()
     $util.qr($deniedFields.put($deniedField, \\"\\"))
   #end
   #if( !$util.isNull($ctx.args.condition) )
+    #set( $conditionMap = $util.parseJson($util.toJson($ctx.args.condition)) )
     #set( $allowedConditionFields = [] )
     $util.qr($allowedConditionFields.addAll($allowedFields))
     $util.qr($allowedConditionFields.addAll($nullAllowedFields))
     #set( $conditionCombinators = [\\"and\\",\\"or\\",\\"not\\"] )
-    #set( $conditionWorklist = [$ctx.args.condition] )
-    #foreach( $iteration in [0..255] )
-    #if( $conditionWorklist.isEmpty() )
-      #break
-    #end
-    #set( $currentCondition = $conditionWorklist.remove($conditionWorklist.size() - 1) )
-    #foreach( $conditionEntry in $currentCondition.entrySet() )
-      #if( $conditionCombinators.contains($conditionEntry.key) )
-        #if( $util.isList($conditionEntry.value) )
-          #foreach( $nestedCondition in $conditionEntry.value )
-            #if( $util.isMap($nestedCondition) )
-              $util.qr($conditionWorklist.add($nestedCondition))
+    #set( $conditionLevel = [$conditionMap] )
+    #foreach( $depth in [0..9] )
+    #set( $nextConditionLevel = [] )
+    #foreach( $levelMap in $conditionLevel )
+      #foreach( $conditionEntry in $levelMap.entrySet() )
+        #if( $conditionCombinators.contains($conditionEntry.key) )
+          #if( $util.isList($conditionEntry.value) )
+            #foreach( $nestedCondition in $conditionEntry.value )
+              #if( $util.isMap($nestedCondition) )
+                $util.qr($nextConditionLevel.add($nestedCondition))
+              #end
+            #end
+          #else
+            #if( $util.isMap($conditionEntry.value) )
+              $util.qr($nextConditionLevel.add($conditionEntry.value))
             #end
           #end
         #else
-          #if( $util.isMap($conditionEntry.value) )
-            $util.qr($conditionWorklist.add($conditionEntry.value))
+          #if( !$allowedConditionFields.contains($conditionEntry.key) )
+            $util.qr($deniedFields.put($conditionEntry.key, \\"\\"))
           #end
-        #end
-      #else
-        #if( !$allowedConditionFields.contains($conditionEntry.key) )
-          $util.qr($deniedFields.put($conditionEntry.key, \\"\\"))
         #end
       #end
     #end
+    #if( $nextConditionLevel.isEmpty() )
+      #break
+    #end
+    #set( $conditionLevel = $nextConditionLevel )
     #end
   #end
 #end

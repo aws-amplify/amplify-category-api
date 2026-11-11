@@ -63,46 +63,59 @@ const conditionFieldAccessCheck = (): Expression[] => [
   iff(
     not(methodCall(ref('util.isNull'), ref('ctx.args.condition'))),
     compoundExpression([
+      // Re-parse the condition argument into a plain map. `$ctx.args.condition` is
+      // the raw GraphQL-argument object; calling list/map Java methods on it (or on
+      // its nested values) is not supported by the AppSync VTL runtime. Routing it
+      // through util.toJson/util.parseJson materializes a plain map/list structure
+      // whose entrySet()/keySet() behave, the same pattern getInputFields() uses.
+      set(ref('conditionMap'), methodCall(ref('util.parseJson'), methodCall(ref('util.toJson'), ref('ctx.args.condition')))),
       // allowed := allowedFields + nullAllowedFields (the fields this caller may touch)
       set(ref('allowedConditionFields'), list([])),
       qref(methodCall(ref('allowedConditionFields.addAll'), ref(ALLOWED_FIELDS))),
       qref(methodCall(ref('allowedConditionFields.addAll'), ref(NULL_ALLOWED_FIELDS))),
       set(ref('conditionCombinators'), raw(JSON.stringify(CONDITION_COMBINATORS))),
-      // worklist of condition maps still to inspect, seeded with the top-level condition
-      set(ref('conditionWorklist'), list([ref('ctx.args.condition')])),
-      // Bounded drain of the worklist. Velocity's #foreach snapshots its collection,
-      // so a map added mid-loop would not be visited; instead iterate a fixed range
-      // and pop one map per turn, stopping early once the worklist is empty. The cap
-      // bounds work on a pathologically nested condition. The range literal and the
-      // early #break are emitted raw because the mapping-template `ref` helper prefixes
-      // `$`, which a Velocity range `[0..N]` and the `#break` directive must not carry.
-      raw('#foreach( $iteration in [0..255] )'),
-      iff(ref('conditionWorklist.isEmpty()'), raw('#break')),
-      set(ref('currentCondition'), ref('conditionWorklist.remove($conditionWorklist.size() - 1)')),
-      forEach(ref('conditionEntry'), ref('currentCondition.entrySet()'), [
-        ifElse(
-          methodCall(ref('conditionCombinators.contains'), ref('conditionEntry.key')),
-          // combinator: `and`/`or` hold a list of condition maps, `not` holds one map
+      // Flatten the condition's field keys, descending through the and/or/not
+      // combinators to a bounded depth. Velocity has no recursion, so each depth is
+      // an explicit pass over a list of maps; the next depth's maps are gathered as
+      // we go. Combinator nesting past this depth is rare and would only cause the
+      // check to miss a very deeply nested field, never to wrongly allow a top-level
+      // one. The lists are built with util.toJson/parseJson so every value is a plain
+      // map/list the runtime can iterate.
+      set(ref('conditionLevel'), list([ref('conditionMap')])),
+      raw('#foreach( $depth in [0..9] )'),
+      set(ref('nextConditionLevel'), list([])),
+      forEach(ref('levelMap'), ref('conditionLevel'), [
+        forEach(ref('conditionEntry'), ref('levelMap.entrySet()'), [
           ifElse(
-            methodCall(ref('util.isList'), ref('conditionEntry.value')),
-            forEach(ref('nestedCondition'), ref('conditionEntry.value'), [
+            methodCall(ref('conditionCombinators.contains'), ref('conditionEntry.key')),
+            // combinator: `and`/`or` hold a list of condition maps, `not` holds one map.
+            // Gather child maps for the next depth.
+            ifElse(
+              methodCall(ref('util.isList'), ref('conditionEntry.value')),
+              forEach(ref('nestedCondition'), ref('conditionEntry.value'), [
+                iff(
+                  methodCall(ref('util.isMap'), ref('nestedCondition')),
+                  qref(methodCall(ref('nextConditionLevel.add'), ref('nestedCondition'))),
+                ),
+              ]),
               iff(
-                methodCall(ref('util.isMap'), ref('nestedCondition')),
-                qref(methodCall(ref('conditionWorklist.add'), ref('nestedCondition'))),
+                methodCall(ref('util.isMap'), ref('conditionEntry.value')),
+                qref(methodCall(ref('nextConditionLevel.add'), ref('conditionEntry.value'))),
               ),
-            ]),
+            ),
+            // field key: deny it if the caller is not allowed to access that field
             iff(
-              methodCall(ref('util.isMap'), ref('conditionEntry.value')),
-              qref(methodCall(ref('conditionWorklist.add'), ref('conditionEntry.value'))),
+              not(methodCall(ref('allowedConditionFields.contains'), ref('conditionEntry.key'))),
+              qref(methodCall(ref(`${DENIED_FIELDS}.put`), ref('conditionEntry.key'), str(''))),
             ),
           ),
-          // field key: deny it if the caller is not allowed to access that field
-          iff(
-            not(methodCall(ref('allowedConditionFields.contains'), ref('conditionEntry.key'))),
-            qref(methodCall(ref(`${DENIED_FIELDS}.put`), ref('conditionEntry.key'), str(''))),
-          ),
-        ),
+        ]),
       ]),
+      // descend; stop early once no combinator children remain. #break and the range
+      // are raw because the ref helper would prefix `$`, which a Velocity range and
+      // the #break directive must not carry.
+      iff(ref('nextConditionLevel.isEmpty()'), raw('#break')),
+      set(ref('conditionLevel'), ref('nextConditionLevel')),
       raw('#end'),
     ]),
   ),
