@@ -14,6 +14,12 @@ import { DeploymentResources, mockSqlDataSourceStrategy, testTransform } from '@
 import { HasOneTransformer, ManyToManyTransformer } from '..';
 import { hasGeneratedDirective, hasGeneratedField } from './test-helpers';
 
+// The update/delete condition read-oracle check emits a $readableFields line built
+// from each model's own readable fields, so a join table and its parent differ on
+// that one line even when their auth is otherwise identical. Strip it before the
+// inherited-auth equality checks, matching how the $allowedFields lines are stripped.
+const READABLE_FIELDS_LINE = /\n?\s*#set\( \$readableFields = \[[^\]]*\] \)/g;
+
 test('fails if @manyToMany was used on an object that is not a model type', () => {
   const inputSchema = `
     type Foo {
@@ -298,7 +304,12 @@ test('join table inherits auth from first table', () => {
   expect(out.resolvers['Mutation.createFooBar.postAuth.1.req.vtl']).toEqual(out.resolvers['Mutation.createFoo.postAuth.1.req.vtl']);
   expect(out.resolvers['Mutation.deleteFooBar.auth.1.req.vtl']).toEqual(out.resolvers['Mutation.deleteFoo.auth.1.req.vtl']);
   expect(out.resolvers['Mutation.deleteFooBar.postAuth.1.req.vtl']).toEqual(out.resolvers['Mutation.deleteFoo.postAuth.1.req.vtl']);
-  expect(out.resolvers['Mutation.deleteFooBar.auth.1.res.vtl']).toEqual(out.resolvers['Mutation.deleteFoo.auth.1.res.vtl']);
+  // The condition read-oracle check sets $readableFields from each model's own
+  // readable fields, so the join table and the parent legitimately differ on that
+  // one line; strip it, as the field-set lines below are stripped.
+  expect(out.resolvers['Mutation.deleteFooBar.auth.1.res.vtl'].replace(READABLE_FIELDS_LINE, '')).toEqual(
+    out.resolvers['Mutation.deleteFoo.auth.1.res.vtl'].replace(READABLE_FIELDS_LINE, ''),
+  );
   expect(out.resolvers['Mutation.deleteFooBar.req.vtl']).toEqual(out.resolvers['Mutation.deleteFoo.req.vtl']);
   expect(out.resolvers['Mutation.deleteFooBar.res.vtl']).toEqual(out.resolvers['Mutation.deleteFoo.res.vtl']);
   expect(out.resolvers['Mutation.updateFooBar.auth.1.req.vtl']).toEqual(out.resolvers['Mutation.updateFoo.auth.1.req.vtl']);
@@ -306,11 +317,13 @@ test('join table inherits auth from first table', () => {
   expect(
     out.resolvers['Mutation.updateFooBar.auth.1.res.vtl']
       .replace('#set( $allowedFields = ["id","fooID","barID","foo","bar"] )', '')
-      .replace('#set( $nullAllowedFields = ["id","fooID","barID","foo","bar"] )', ''),
+      .replace('#set( $nullAllowedFields = ["id","fooID","barID","foo","bar"] )', '')
+      .replace(READABLE_FIELDS_LINE, ''),
   ).toEqual(
     out.resolvers['Mutation.updateFoo.auth.1.res.vtl']
       .replace('#set( $allowedFields = ["id","bars"] )', '')
-      .replace('#set( $nullAllowedFields = ["id","bars"] )', ''),
+      .replace('#set( $nullAllowedFields = ["id","bars"] )', '')
+      .replace(READABLE_FIELDS_LINE, ''),
   );
   expect(out.resolvers['Mutation.updateFooBar.req.vtl']).toEqual(out.resolvers['Mutation.updateFoo.req.vtl']);
   expect(out.resolvers['Mutation.updateFooBar.res.vtl']).toEqual(out.resolvers['Mutation.updateFoo.res.vtl']);
@@ -343,7 +356,10 @@ test('join table inherits auth from second table', () => {
   expect(out.resolvers['Mutation.createFooBar.postAuth.1.req.vtl']).toEqual(out.resolvers['Mutation.createBar.postAuth.1.req.vtl']);
   expect(out.resolvers['Mutation.deleteFooBar.auth.1.req.vtl']).toEqual(out.resolvers['Mutation.deleteBar.auth.1.req.vtl']);
   expect(out.resolvers['Mutation.deleteFooBar.postAuth.1.req.vtl']).toEqual(out.resolvers['Mutation.deleteBar.postAuth.1.req.vtl']);
-  expect(out.resolvers['Mutation.deleteFooBar.auth.1.res.vtl']).toEqual(out.resolvers['Mutation.deleteBar.auth.1.res.vtl']);
+  // See the note above: $readableFields differs by model, strip it before comparing.
+  expect(out.resolvers['Mutation.deleteFooBar.auth.1.res.vtl'].replace(READABLE_FIELDS_LINE, '')).toEqual(
+    out.resolvers['Mutation.deleteBar.auth.1.res.vtl'].replace(READABLE_FIELDS_LINE, ''),
+  );
   expect(out.resolvers['Mutation.deleteFooBar.req.vtl']).toEqual(out.resolvers['Mutation.deleteBar.req.vtl']);
   expect(out.resolvers['Mutation.deleteFooBar.res.vtl']).toEqual(out.resolvers['Mutation.deleteBar.res.vtl']);
   expect(out.resolvers['Mutation.updateFooBar.auth.1.req.vtl']).toEqual(out.resolvers['Mutation.updateBar.auth.1.req.vtl']);
@@ -351,11 +367,13 @@ test('join table inherits auth from second table', () => {
   expect(
     out.resolvers['Mutation.updateFooBar.auth.1.res.vtl']
       .replace('#set( $allowedFields = ["id","fooID","barID","foo","bar"] )', '')
-      .replace('#set( $nullAllowedFields = ["id","fooID","barID","foo","bar"] )', ''),
+      .replace('#set( $nullAllowedFields = ["id","fooID","barID","foo","bar"] )', '')
+      .replace(READABLE_FIELDS_LINE, ''),
   ).toEqual(
     out.resolvers['Mutation.updateBar.auth.1.res.vtl']
       .replace('#set( $allowedFields = ["id","foos"] )', '')
-      .replace('#set( $nullAllowedFields = ["id","foos"] )', ''),
+      .replace('#set( $nullAllowedFields = ["id","foos"] )', '')
+      .replace(READABLE_FIELDS_LINE, ''),
   );
   expect(out.resolvers['Mutation.updateFooBar.req.vtl']).toEqual(out.resolvers['Mutation.updateBar.req.vtl']);
   expect(out.resolvers['Mutation.updateFooBar.res.vtl']).toEqual(out.resolvers['Mutation.updateBar.res.vtl']);
