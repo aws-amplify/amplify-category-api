@@ -171,6 +171,29 @@ beforeAll(async () => {
         text: String @auth(rules: [
           { allow: groups, groups: ["Admin"], operations: [create, read] },
           { allow: owner, ownerField: "owner1", operations : [read, update]}])
+    }
+
+    # An owner (ownerField: author) may read, update and delete the record, but
+    # secret is readable by "Admin" only. The owner's delete grant on secret keeps
+    # them a full-delete role, yet they still cannot read secret -- so naming secret
+    # in an update OR delete condition must be rejected: a DynamoDB conditional
+    # check would otherwise leak secret's value through success vs
+    # ConditionalCheckFailed.
+    type Project @model
+      @auth(rules: [
+        { allow: groups, groups: ["Admin"] },
+        { allow: owner, ownerField: "author", operations: [read, update, delete] }])
+      {
+        id: ID
+        author: String
+        title: String
+        secret: String
+          @auth(
+            rules: [
+              { allow: groups, groups: ["Admin"], operations: [create, read, update] }
+              { allow: owner, ownerField: "author", operations: [delete] }
+            ]
+          )
     }`;
 
   const userPoolResponse = await createUserPool(cognitoClient, `UserPool${STACK_NAME}`);
@@ -620,4 +643,112 @@ test('AND per-field dynamic auth rule test', async () => {
       }`);
   expect(correctUpdatePostResponse.data.updatePost.owner1).toEqual(USERNAME1);
   expect(correctUpdatePostResponse.data.updatePost.text).toEqual('newText');
+});
+
+describe('mutation condition cannot reference a field the caller cannot read', () => {
+  // CLIENT_1 is Admin (can read secret); CLIENT_2 is the owner via author=user2@test.com
+  // (can update title but cannot read secret). Admin seeds a record with a known secret.
+  let projectId: string;
+  const theSecret = 'top-secret-value';
+
+  beforeAll(async () => {
+    const created = await GRAPHQL_CLIENT_1.query(
+      `mutation {
+          createProject(input: { author: "${USERNAME2}", title: "t0", secret: "${theSecret}" }) {
+              id
+              author
+              title
+          }
+      }`,
+      {},
+    );
+    projectId = created.data.createProject.id;
+    expect(projectId).toBeDefined();
+  });
+
+  test('owner update is denied when the condition names a read-restricted field (top level)', async () => {
+    const res = await GRAPHQL_CLIENT_2.query(
+      `mutation {
+          updateProject(input: { id: "${projectId}", title: "t1" }, condition: { secret: { eq: "${theSecret}" } }) {
+              id
+              title
+          }
+      }`,
+      {},
+    );
+    expect(res.data.updateProject).toBeNull();
+    expect(res.errors).toHaveLength(1);
+    expect(res.errors[0].errorType).toEqual('Unauthorized');
+  });
+
+  test('owner update is denied when the read-restricted field is nested inside and/or/not', async () => {
+    const nestedConditions = [
+      `{ and: [{ title: { eq: "t0" } }, { secret: { eq: "${theSecret}" } }] }`,
+      `{ or: [{ secret: { eq: "${theSecret}" } }] }`,
+      `{ not: { secret: { eq: "${theSecret}" } } }`,
+    ];
+    for (const condition of nestedConditions) {
+      const res = await GRAPHQL_CLIENT_2.query(
+        `mutation {
+            updateProject(input: { id: "${projectId}", title: "t1" }, condition: ${condition}) {
+                id
+                title
+            }
+        }`,
+        {},
+      );
+      expect(res.data.updateProject).toBeNull();
+      expect(res.errors).toHaveLength(1);
+      expect(res.errors[0].errorType).toEqual('Unauthorized');
+    }
+  });
+
+  test('owner update is denied when the read-restricted field is nested beyond the old depth bound', async () => {
+    // Twelve levels of `and` nesting -- deeper than the previous depth-10 walk, so
+    // this would have leaked before the serialized-condition check.
+    let condition = `{ secret: { eq: "${theSecret}" } }`;
+    for (let depth = 0; depth < 12; depth++) {
+      condition = `{ and: [${condition}] }`;
+    }
+    const res = await GRAPHQL_CLIENT_2.query(
+      `mutation {
+          updateProject(input: { id: "${projectId}", title: "t1" }, condition: ${condition}) {
+              id
+              title
+          }
+      }`,
+      {},
+    );
+    expect(res.data.updateProject).toBeNull();
+    expect(res.errors).toHaveLength(1);
+    expect(res.errors[0].errorType).toEqual('Unauthorized');
+  });
+
+  test('owner update succeeds when the condition only names fields the caller can read', async () => {
+    const res = await GRAPHQL_CLIENT_2.query(
+      `mutation {
+          updateProject(input: { id: "${projectId}", title: "t2" }, condition: { title: { eq: "t0" } }) {
+              id
+              title
+          }
+      }`,
+      {},
+    );
+    expect(res.data.updateProject.title).toEqual('t2');
+    expect(res.errors).toBeUndefined();
+  });
+
+  test('owner delete is denied when the condition names a read-restricted field', async () => {
+    const res = await GRAPHQL_CLIENT_2.query(
+      `mutation {
+          deleteProject(input: { id: "${projectId}" }, condition: { secret: { eq: "${theSecret}" } }) {
+              id
+          }
+      }`,
+      {},
+    );
+    expect(res.data.deleteProject).toBeNull();
+    expect(res.errors).toHaveLength(1);
+    expect(res.errors[0].errorType).toEqual('Unauthorized');
+  });
 });

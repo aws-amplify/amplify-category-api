@@ -32,6 +32,10 @@ export const IS_AUTHORIZED_FLAG = 'isAuthorized';
 export const ALLOWED_FIELDS = 'allowedFields';
 export const NULL_ALLOWED_FIELDS = 'nullAllowedFields';
 export const DENIED_FIELDS = 'deniedFields';
+// Fields the matched role(s) may READ. Accumulated per matched role (like
+// allowedFields) so a mutation `condition` can only reference a field some
+// matched role can read, closing the read-oracle on field-level @auth.
+export const READABLE_FIELDS = 'readableFields';
 // resolver
 export const NONE_DS = 'NONE_DS';
 // relational directives

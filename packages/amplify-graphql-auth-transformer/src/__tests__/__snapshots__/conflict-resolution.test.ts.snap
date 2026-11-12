@@ -41,13 +41,16 @@ $util.qr($ctx.stash.put(\\"hasAuth\\", true))
 #set( $isAuthorized = false )
 #set( $allowedFields = [] )
 #set( $nullAllowedFields = [] )
+#set( $readableFields = [] )
 #set( $deniedFields = {} )
 #if( $util.authType() == \\"IAM Authorization\\" )
   #if( $ctx.identity.userArn == $ctx.stash.authRole )
+    $util.qr($readableFields.addAll([\\"id\\",\\"writable\\",\\"readOnly\\",\\"hidden\\",\\"createdAt\\",\\"updatedAt\\",\\"_version\\",\\"_deleted\\",\\"_lastChangedAt\\"]))
     #set( $isAuthorized = true )
   #end
 #end
 #if( $util.authType() == \\"User Pool Authorization\\" )
+  $util.qr($readableFields.addAll([\\"id\\",\\"writable\\",\\"readOnly\\",\\"createdAt\\",\\"updatedAt\\",\\"_version\\",\\"_deleted\\",\\"_lastChangedAt\\"]))
   $util.qr($allowedFields.addAll([\\"id\\",\\"writable\\",\\"_version\\",\\"_deleted\\",\\"_lastChangedAt\\"]))
   $util.qr($nullAllowedFields.addAll([]))
 #end
@@ -62,6 +65,16 @@ $util.unauthorized()
   #end
   #foreach( $deniedField in $util.list.copyAndRemoveAll($inputFields, $allowedFields) )
     $util.qr($deniedFields.put($deniedField, \\"\\"))
+  #end
+#end
+#if( !$util.isNull($ctx.args.condition) )
+  #set( $conditionJson = $util.toJson($ctx.args.condition) )
+  #set( $conditionFieldNames = [\\"hidden\\"] )
+  #foreach( $conditionField in $conditionFieldNames )
+    #set( $conditionFieldKey = \\"\${util.toJson($conditionField)}:\\" )
+    #if( !$readableFields.contains($conditionField) && $conditionJson.contains($conditionFieldKey) )
+      $util.qr($deniedFields.put($conditionField, \\"\\"))
+    #end
   #end
 #end
 #if( $deniedFields.keySet().size() > 0 )

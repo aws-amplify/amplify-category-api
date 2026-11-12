@@ -241,6 +241,7 @@ test('dynamic group auth generates authorized fields list correctly', () => {
     #set( $isAuthorized = false )
     #set( $allowedFields = [] )
     #set( $nullAllowedFields = [] )
+    #set( $readableFields = [] )
     #set( $deniedFields = {} )
     #if( $util.authType() == \\"User Pool Authorization\\" )
       #if( !$isAuthorized )
@@ -248,6 +249,7 @@ test('dynamic group auth generates authorized fields list correctly', () => {
         #set( $groupClaim0 = $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:groups\\"), []) )
         #set( $groupAllowedFields0 = [\\"id\\",\\"description\\"] )
         #set( $groupNullAllowedFields0 = [] )
+        #set( $groupReadableFields0 = [\\"id\\",\\"description\\",\\"createdAt\\",\\"updatedAt\\"] )
         #set( $isAuthorizedOnAllFields0 = false )
         #if( $util.isString($groupClaim0) )
           #if( $util.isList($util.parseJson($groupClaim0)) )
@@ -258,6 +260,7 @@ test('dynamic group auth generates authorized fields list correctly', () => {
         #end
         #foreach( $userGroup in $groupClaim0 )
           #if( $groupEntity0.contains($userGroup) )
+            $util.qr($readableFields.addAll($groupReadableFields0))
             #if( $isAuthorizedOnAllFields0 )
               #set( $isAuthorized = true )
               #break
@@ -280,6 +283,16 @@ test('dynamic group auth generates authorized fields list correctly', () => {
       #end
       #foreach( $deniedField in $util.list.copyAndRemoveAll($inputFields, $allowedFields) )
         $util.qr($deniedFields.put($deniedField, \\"\\"))
+      #end
+    #end
+    #if( !$util.isNull($ctx.args.condition) )
+      #set( $conditionJson = $util.toJson($ctx.args.condition) )
+      #set( $conditionFieldNames = [\\"name\\",\\"allowedGroups\\"] )
+      #foreach( $conditionField in $conditionFieldNames )
+        #set( $conditionFieldKey = \\"\${util.toJson($conditionField)}:\\" )
+        #if( !$readableFields.contains($conditionField) && $conditionJson.contains($conditionFieldKey) )
+          $util.qr($deniedFields.put($conditionField, \\"\\"))
+        #end
       #end
     #end
     #if( $deniedFields.keySet().size() > 0 )
