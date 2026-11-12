@@ -41,13 +41,16 @@ $util.qr($ctx.stash.put(\\"hasAuth\\", true))
 #set( $isAuthorized = false )
 #set( $allowedFields = [] )
 #set( $nullAllowedFields = [] )
+#set( $readableFields = [] )
 #set( $deniedFields = {} )
 #if( $util.authType() == \\"IAM Authorization\\" )
   #if( $ctx.identity.userArn == $ctx.stash.authRole )
+    $util.qr($readableFields.addAll([\\"id\\",\\"writable\\",\\"readOnly\\",\\"hidden\\",\\"createdAt\\",\\"updatedAt\\",\\"_version\\",\\"_deleted\\",\\"_lastChangedAt\\"]))
     #set( $isAuthorized = true )
   #end
 #end
 #if( $util.authType() == \\"User Pool Authorization\\" )
+  $util.qr($readableFields.addAll([\\"id\\",\\"writable\\",\\"readOnly\\",\\"createdAt\\",\\"updatedAt\\",\\"_version\\",\\"_deleted\\",\\"_lastChangedAt\\"]))
   $util.qr($allowedFields.addAll([\\"id\\",\\"writable\\",\\"_version\\",\\"_deleted\\",\\"_lastChangedAt\\"]))
   $util.qr($nullAllowedFields.addAll([]))
 #end
@@ -63,40 +66,14 @@ $util.unauthorized()
   #foreach( $deniedField in $util.list.copyAndRemoveAll($inputFields, $allowedFields) )
     $util.qr($deniedFields.put($deniedField, \\"\\"))
   #end
-  #if( !$util.isNull($ctx.args.condition) )
-    #set( $conditionMap = $util.parseJson($util.toJson($ctx.args.condition)) )
-    #set( $allowedConditionFields = [] )
-    $util.qr($allowedConditionFields.addAll($allowedFields))
-    $util.qr($allowedConditionFields.addAll($nullAllowedFields))
-    #set( $conditionCombinators = [\\"and\\",\\"or\\",\\"not\\"] )
-    #set( $conditionLevel = [$conditionMap] )
-    #foreach( $depth in [0..9] )
-    #set( $nextConditionLevel = [] )
-    #foreach( $levelMap in $conditionLevel )
-      #foreach( $conditionEntry in $levelMap.entrySet() )
-        #if( $conditionCombinators.contains($conditionEntry.key) )
-          #if( $util.isList($conditionEntry.value) )
-            #foreach( $nestedCondition in $conditionEntry.value )
-              #if( $util.isMap($nestedCondition) )
-                $util.qr($nextConditionLevel.add($nestedCondition))
-              #end
-            #end
-          #else
-            #if( $util.isMap($conditionEntry.value) )
-              $util.qr($nextConditionLevel.add($conditionEntry.value))
-            #end
-          #end
-        #else
-          #if( !$allowedConditionFields.contains($conditionEntry.key) )
-            $util.qr($deniedFields.put($conditionEntry.key, \\"\\"))
-          #end
-        #end
-      #end
-    #end
-    #if( $nextConditionLevel.isEmpty() )
-      #break
-    #end
-    #set( $conditionLevel = $nextConditionLevel )
+#end
+#if( !$util.isNull($ctx.args.condition) )
+  #set( $conditionJson = $util.toJson($ctx.args.condition) )
+  #set( $conditionFieldNames = [\\"hidden\\"] )
+  #foreach( $conditionField in $conditionFieldNames )
+    #set( $conditionFieldKey = \\"\${util.toJson($conditionField)}:\\" )
+    #if( !$readableFields.contains($conditionField) && $conditionJson.contains($conditionFieldKey) )
+      $util.qr($deniedFields.put($conditionField, \\"\\"))
     #end
   #end
 #end

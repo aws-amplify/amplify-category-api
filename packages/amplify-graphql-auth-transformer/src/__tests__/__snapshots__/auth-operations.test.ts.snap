@@ -10,6 +10,7 @@ $util.qr($ctx.stash.put(\\"hasAuth\\", true))
 #set( $isAuthorized = false )
 #set( $allowedFields = [] )
 #set( $nullAllowedFields = [] )
+#set( $readableFields = [] )
 #set( $deniedFields = {} )
 #if( $util.authType() == \\"API Key Authorization\\" )
 $util.unauthorized()
@@ -26,8 +27,10 @@ $util.unauthorized()
       $util.qr($ownerClaimsList0.add($util.defaultIfNull($ctx.identity.claims.get(\\"username\\"), $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), null))))
       #set( $ownerAllowedFields0 = [\\"email\\",\\"nick\\",\\"id\\",\\"_version\\",\\"_deleted\\",\\"_lastChangedAt\\"] )
       #set( $ownerNullAllowedFields0 = [] )
+      #set( $ownerReadableFields0 = [\\"email\\",\\"nick\\",\\"id\\",\\"createdAt\\",\\"updatedAt\\",\\"_version\\",\\"_deleted\\",\\"_lastChangedAt\\",\\"owner\\"] )
       #set( $isAuthorizedOnAllFields0 = false )
       #if( $ownerEntity0 == $ownerClaim0 || $ownerClaimsList0.contains($ownerEntity0) )
+        $util.qr($readableFields.addAll($ownerReadableFields0))
         #if( $isAuthorizedOnAllFields0 )
           #set( $isAuthorized = true )
         #else
@@ -50,42 +53,6 @@ $util.unauthorized()
   #foreach( $deniedField in $util.list.copyAndRemoveAll($inputFields, $allowedFields) )
     $util.qr($deniedFields.put($deniedField, \\"\\"))
   #end
-  #if( !$util.isNull($ctx.args.condition) )
-    #set( $conditionMap = $util.parseJson($util.toJson($ctx.args.condition)) )
-    #set( $allowedConditionFields = [] )
-    $util.qr($allowedConditionFields.addAll($allowedFields))
-    $util.qr($allowedConditionFields.addAll($nullAllowedFields))
-    #set( $conditionCombinators = [\\"and\\",\\"or\\",\\"not\\"] )
-    #set( $conditionLevel = [$conditionMap] )
-    #foreach( $depth in [0..9] )
-    #set( $nextConditionLevel = [] )
-    #foreach( $levelMap in $conditionLevel )
-      #foreach( $conditionEntry in $levelMap.entrySet() )
-        #if( $conditionCombinators.contains($conditionEntry.key) )
-          #if( $util.isList($conditionEntry.value) )
-            #foreach( $nestedCondition in $conditionEntry.value )
-              #if( $util.isMap($nestedCondition) )
-                $util.qr($nextConditionLevel.add($nestedCondition))
-              #end
-            #end
-          #else
-            #if( $util.isMap($conditionEntry.value) )
-              $util.qr($nextConditionLevel.add($conditionEntry.value))
-            #end
-          #end
-        #else
-          #if( !$allowedConditionFields.contains($conditionEntry.key) )
-            $util.qr($deniedFields.put($conditionEntry.key, \\"\\"))
-          #end
-        #end
-      #end
-    #end
-    #if( $nextConditionLevel.isEmpty() )
-      #break
-    #end
-    #set( $conditionLevel = $nextConditionLevel )
-    #end
-  #end
 #end
 #if( $deniedFields.keySet().size() > 0 )
   $util.error(\\"Unauthorized on \${deniedFields.keySet()}\\", \\"Unauthorized\\")
@@ -98,6 +65,8 @@ exports[`can update on model without delete 2`] = `
 "## [Start] Authorization Steps. **
 $util.qr($ctx.stash.put(\\"hasAuth\\", true))
 #set( $isAuthorized = false )
+#set( $readableFields = [] )
+#set( $deniedFields = {} )
 #if( $util.authType() == \\"API Key Authorization\\" )
 $util.unauthorized()
 #end
@@ -106,6 +75,9 @@ $util.unauthorized()
 #end
 #if( !$isAuthorized )
 $util.unauthorized()
+#end
+#if( $deniedFields.keySet().size() > 0 )
+  $util.error(\\"Unauthorized on \${deniedFields.keySet()}\\", \\"Unauthorized\\")
 #end
 $util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 ## [End] Authorization Steps. **"

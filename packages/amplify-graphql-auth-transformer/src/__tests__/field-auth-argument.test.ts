@@ -684,14 +684,21 @@ test('update auth denies a mutation condition on a field the caller cannot acces
   // after the existing item has been fetched (owner auth needs ctx.result).
   const updateAuth = out.resolvers['Mutation.updateNote.auth.1.res.vtl'];
   expect(updateAuth).toBeDefined();
-  // The condition-field access check is emitted, and uses the allowed-field set.
+  // Each matched role contributes the fields it may read to $readableFields.
+  expect(updateAuth).toContain('#set( $readableFields = [] )');
+  expect(updateAuth).toContain('$util.qr($readableFields.addAll($ownerReadableFields0))');
+  expect(updateAuth).toContain('$util.qr($readableFields.addAll($groupRole.readableFields))');
+  // The condition-field access check is emitted and only lists the read-restricted
+  // field (adminSecret); the primary key, unrestricted fields, and timestamps are
+  // always conditionable and are left out.
   expect(updateAuth).toContain('#if( !$util.isNull($ctx.args.condition) )');
-  expect(updateAuth).toContain('$util.qr($allowedConditionFields.addAll($allowedFields))');
-  expect(updateAuth).toContain('$util.qr($allowedConditionFields.addAll($nullAllowedFields))');
-  // A combinator key is recursed into, a field key outside the allowed set is denied.
-  expect(updateAuth).toContain('#set( $conditionCombinators = ["and","or","not"] )');
-  expect(updateAuth).toContain('#if( !$allowedConditionFields.contains($conditionEntry.key) )');
-  expect(updateAuth).toContain('$util.qr($deniedFields.put($conditionEntry.key, ""))');
+  expect(updateAuth).toContain('#set( $conditionJson = $util.toJson($ctx.args.condition) )');
+  expect(updateAuth).toContain('#set( $conditionFieldNames = ["adminSecret"] )');
+  // A field serialized anywhere in the condition (any nesting depth) that the
+  // matched role cannot read is denied -- the key is matched as a JSON object key.
+  expect(updateAuth).toContain('#set( $conditionFieldKey = "${util.toJson($conditionField)}:" )');
+  expect(updateAuth).toContain('#if( !$readableFields.contains($conditionField) && $conditionJson.contains($conditionFieldKey) )');
+  expect(updateAuth).toContain('$util.qr($deniedFields.put($conditionField, ""))');
   // The denied set still feeds the existing Unauthorized error.
   expect(updateAuth).toContain('$util.error("Unauthorized on ${deniedFields.keySet()}", "Unauthorized")');
 });

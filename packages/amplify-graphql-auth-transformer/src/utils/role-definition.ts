@@ -15,6 +15,12 @@ export interface RoleDefinition {
   areAllFieldsAllowed?: boolean;
   areAllFieldsNullAllowed?: boolean;
   isEntityList?: boolean;
+  // Fields this role may READ. Accumulated per matched role by update/delete
+  // auth so a mutation `condition` can only reference a field some matched role
+  // can read; otherwise the DynamoDB conditional check acts as a read oracle on
+  // that field. This is read permission, deliberately distinct from
+  // `allowedFields` (write).
+  readableFields?: Array<string>;
 }
 
 /**
