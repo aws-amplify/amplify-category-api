@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.11.18](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-schema-generator@0.11.17...@aws-amplify/graphql-schema-generator@0.11.18) (2026-11-06)
+
+### Bug Fixes
+
+- **graphql-schema-generator:** update csv-parse and mysql2 ([bf14309](https://github.com/aws-amplify/amplify-category-api/commit/bf1430993ffd93c1e784691ef696af71c5a5d5ee))
+
 ## [0.11.17](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-schema-generator@0.11.16...@aws-amplify/graphql-schema-generator@0.11.17) (2026-09-30)
 
 **Note:** Version bump only for package @aws-amplify/graphql-schema-generator
