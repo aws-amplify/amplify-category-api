@@ -53,13 +53,11 @@ import {
 } from './helpers';
 
 /**
- * The model fields a `condition` must be checked against: those that at least one
- * mutation role cannot read. A field every role can read (the primary key,
- * timestamps, and any field without a field-level read restriction) carries no
- * protected value and is always safe to condition on, so it is left out of the
- * runtime check -- otherwise a role whose readable set happens to omit such a
- * field (e.g. an owner's set does not list `updatedAt`) would wrongly reject a
- * legitimate condition on it.
+ * The model fields a `condition` is checked against: those at least one mutation
+ * role cannot read. A field every role can read (the primary key, timestamps, any
+ * field without a field-level read restriction) is always allowed in a condition,
+ * so it is left out; otherwise a role whose readable set omits it (an owner's set
+ * does not list `updatedAt`) would reject a valid condition.
  */
 const conditionRestrictedFields = (roles: Array<RoleDefinition>, fields: ReadonlyArray<FieldDefinitionNode>): string[] => {
   const fieldNames = fields.map((field) => field.name.value);
@@ -67,22 +65,15 @@ const conditionRestrictedFields = (roles: Array<RoleDefinition>, fields: Readonl
 };
 
 /**
- * VTL that denies any `condition` referencing a field no matched role can read.
+ * VTL that rejects a `condition` naming a field the caller cannot read.
  *
- * A DynamoDB conditional check leaks whether a guessed value matched (success vs
- * ConditionalCheckFailedException), so a `condition` on a field the caller cannot
- * read is a read oracle on that field. `$readableFields` is the union of the
- * fields readable by the roles that matched (accumulated alongside the write auth
- * above); a field outside it must not appear in the condition.
+ * A field named in `condition` must be readable by the caller. `$readableFields`
+ * is the union of the fields readable by the roles that matched.
  *
- * The condition is serialized once with `util.toJson` and each non-readable model
- * field is matched against that string as `"<field>":`. A condition input only
- * ever emits a field as a JSON object key in that exact form, and serializing
- * flattens every `and` / `or` / `not` nesting into the same string, so this is
- * independent of how deeply the field is wrapped -- no tree walk, no depth bound,
- * and it fails closed. The model field names are known at transform time; the
- * logical combinators `and` / `or` / `not` are never model fields, so they are
- * not in the baked list and are skipped for free.
+ * The condition is serialized once and each restricted field is matched as the
+ * JSON object key `"<field>":`. Serializing flattens every `and` / `or` / `not`
+ * nesting into one string, so the check covers any nesting depth without walking
+ * the tree. `and` / `or` / `not` are never model fields, so they never match.
  */
 const conditionFieldAccessCheck = (fieldNames: ReadonlyArray<string>): Expression[] => {
   if (fieldNames.length === 0) {
@@ -165,6 +156,7 @@ const iamExpression = (
   hasAdminRolesEnabled = false,
   hasIdentityPoolId: boolean,
   genericIamAccessEnabled: boolean,
+  modelFieldNames: ReadonlyArray<string>,
 ): Expression => {
   const expression = new Array<Expression>();
   // allow if using an admin role
@@ -206,7 +198,10 @@ const iamExpression = (
 
   return iff(
     equals(ref('util.authType()'), str(IAM_AUTH_TYPE)),
-    generateIAMAccessCheck(genericIamAccessEnabled, compoundExpression(expression)),
+    // Generic IAM access is granted on every field, so every field is readable in a condition.
+    generateIAMAccessCheck(genericIamAccessEnabled, compoundExpression(expression), [
+      set(ref(READABLE_FIELDS), raw(JSON.stringify(modelFieldNames))),
+    ]),
   );
 };
 
@@ -405,7 +400,13 @@ export const generateAuthExpressionForUpdate = (
   }
   if (providers.hasIAM) {
     totalAuthExpressions.push(
-      iamExpression(iamRoles, providers.hasAdminRolesEnabled, providers.hasIdentityPoolId, providers.genericIamAccessEnabled),
+      iamExpression(
+        iamRoles,
+        providers.hasAdminRolesEnabled,
+        providers.hasIdentityPoolId,
+        providers.genericIamAccessEnabled,
+        fields.map((field) => field.name.value),
+      ),
     );
   }
   if (providers.hasUserPools) {
@@ -447,10 +448,9 @@ export const generateAuthExpressionForUpdate = (
         ]),
       ]),
     ),
-    // The read-oracle guard runs regardless of write authorization: a caller
-    // authorized on every write field can still lack READ on some field, and a
-    // `condition` on it would leak its value through the DynamoDB conditional
-    // check. $readableFields is the union of fields the matched role(s) may read.
+    // A field named in `condition` must be readable by the caller. This runs
+    // regardless of write authorization, since a caller can write every field
+    // without being able to read every field.
     ...conditionFieldAccessCheck(conditionRestrictedFields(roles, fields)),
     iff(
       ref(`${DENIED_FIELDS}.keySet().size() > 0`),
@@ -469,10 +469,8 @@ const addAllowedFieldsIfElse = (
 ): Expression =>
   compoundExpression([
     // The role matched, so its readable fields join the set a `condition` may
-    // reference -- regardless of whether it is authorized on all write fields
-    // (the shortcut below) or only some. Read permission is tracked separately
-    // from write because a role can be writable-everywhere yet not read every
-    // field.
+    // name, whether it is authorized on all write fields (the shortcut below) or
+    // only some. Read is tracked separately from write because the two can differ.
     qref(methodCall(ref(`${READABLE_FIELDS}.addAll`), ref(readableFieldsKey))),
     ifElse(
       ref(condition),

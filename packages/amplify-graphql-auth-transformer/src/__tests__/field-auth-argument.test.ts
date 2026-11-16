@@ -656,11 +656,8 @@ describe('with identity claim feature flag disabled', () => {
   });
 });
 
-test('update auth denies a mutation condition on a field the caller cannot access', () => {
-  // Regression test: field-level @auth on update must authorize fields named in
-  // the mutation `condition`, not only those in `input`. Otherwise a caller who
-  // can update the record can probe an unreadable field through the DynamoDB
-  // conditional check (success vs ConditionalCheckFailed) and recover its value.
+test('update auth denies a mutation condition on a field the caller cannot read', () => {
+  // A field named in a mutation `condition` must be readable by the caller.
   const validSchema = `
     type Note @model @auth(rules: [{ allow: owner }, { allow: groups, groups: ["admin"] }]) {
       id: ID!
@@ -701,4 +698,42 @@ test('update auth denies a mutation condition on a field the caller cannot acces
   expect(updateAuth).toContain('$util.qr($deniedFields.put($conditionField, ""))');
   // The denied set still feeds the existing Unauthorized error.
   expect(updateAuth).toContain('$util.error("Unauthorized on ${deniedFields.keySet()}", "Unauthorized")');
+});
+
+test('update and delete auth treat every field as readable in a condition for generic IAM access', () => {
+  // The owner may delete adminSecret but not read it, so update and delete both
+  // check conditions on adminSecret.
+  const validSchema = `
+    type Note @model @auth(rules: [{ allow: owner }, { allow: groups, groups: ["admin"] }]) {
+      id: ID!
+      owner: String
+      title: String
+      adminSecret: String
+        @auth(rules: [{ allow: groups, groups: ["admin"], operations: [create, read, update] }, { allow: owner, operations: [delete] }])
+    }`;
+  const out = testTransform({
+    schema: validSchema,
+    authConfig: {
+      defaultAuthentication: { authenticationType: 'AMAZON_COGNITO_USER_POOLS' },
+      additionalAuthenticationProviders: [{ authenticationType: 'AWS_IAM' }],
+    },
+    synthParameters: { enableIamAccess: true },
+    transformers: [new ModelTransformer(), new AuthTransformer()],
+  });
+  const genericIamCheck =
+    '#if( $util.authType() == "IAM Authorization" && $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )';
+  const allFieldsReadable = '#set( $readableFields = ["id","owner","title","adminSecret","createdAt","updatedAt"] )';
+  for (const resolverName of ['Mutation.updateNote.auth.1.res.vtl', 'Mutation.deleteNote.auth.1.res.vtl']) {
+    const resolver = out.resolvers[resolverName];
+    expect(resolver).toContain('#set( $conditionFieldNames = ["adminSecret"] )');
+    // The grant branch runs from the generic IAM check up to its #else.
+    const grantStart = resolver.indexOf(genericIamCheck);
+    expect(grantStart).toBeGreaterThan(-1);
+    const grantBranch = resolver.slice(grantStart, resolver.indexOf('#else', grantStart));
+    expect(grantBranch).toContain('#set( $isAuthorized = true )');
+    expect(grantBranch).toContain(allFieldsReadable);
+  }
+  // The IAM access check is shared, so resolvers outside update/delete are unchanged.
+  expect(out.resolvers['Mutation.createNote.auth.1.req.vtl']).toContain(genericIamCheck);
+  expect(out.resolvers['Mutation.createNote.auth.1.req.vtl']).not.toContain('$readableFields');
 });

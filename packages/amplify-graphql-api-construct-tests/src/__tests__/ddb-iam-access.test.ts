@@ -1,6 +1,7 @@
 import * as path from 'path';
 import { createNewProjectDir, deleteProjectDir, tryScheduleCredentialRefresh } from 'amplify-category-api-e2e-core';
 import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
+import { gql } from 'graphql-transformer-core';
 import { initCDKProject, cdkDeploy, cdkDestroy } from '../commands';
 import { AuthConstructStackOutputs } from '../types';
 import { CognitoIdentityPoolCredentialsFactory } from '../cognito-identity-pool-credentials';
@@ -257,5 +258,61 @@ describe('CDK DDB Iam Access', () => {
         'secret',
       ]).testDoesNotHaveReadAccess(itemId);
     }
+  });
+
+  it('accepts a condition on a field the caller can read and rejects one on a field it cannot', async () => {
+    const secretValue = 'condition-value';
+    const secretCondition = `{ secret: { eq: "${secretValue}" } }`;
+    const createResponse = (await graphqlClientWithIAMAccessBasicRole.mutate({
+      mutation: gql`
+        mutation {
+          createTodoWithPrivateField(input: { description: "initial", secret: "${secretValue}" }) {
+            id
+          }
+        }
+      `,
+      fetchPolicy: 'no-cache',
+    })) as any;
+    const itemId = createResponse.data.createTodoWithPrivateField.id;
+    expect(itemId).toBeTruthy();
+
+    // The unauth role may update description but may not read secret.
+    await expect(
+      graphqlClientWithIAMAccessUnauthRole.mutate({
+        mutation: gql`
+          mutation {
+            updateTodoWithPrivateField(input: { id: "${itemId}", description: "from unauth" }, condition: ${secretCondition}) {
+              id
+            }
+          }
+        `,
+        fetchPolicy: 'no-cache',
+      }),
+    ).rejects.toThrowError(/GraphQL error: Unauthorized on/);
+
+    // Generic IAM access can read every field, so the same condition is accepted on update and delete.
+    const updateResponse = (await graphqlClientWithIAMAccessBasicRole.mutate({
+      mutation: gql`
+        mutation {
+          updateTodoWithPrivateField(input: { id: "${itemId}", description: "updated" }, condition: ${secretCondition}) {
+            id
+          }
+        }
+      `,
+      fetchPolicy: 'no-cache',
+    })) as any;
+    expect(updateResponse.data.updateTodoWithPrivateField.id).toEqual(itemId);
+
+    const deleteResponse = (await graphqlClientWithIAMAccessBasicRole.mutate({
+      mutation: gql`
+        mutation {
+          deleteTodoWithPrivateField(input: { id: "${itemId}" }, condition: ${secretCondition}) {
+            id
+          }
+        }
+      `,
+      fetchPolicy: 'no-cache',
+    })) as any;
+    expect(deleteResponse.data.deleteTodoWithPrivateField.id).toEqual(itemId);
   });
 });

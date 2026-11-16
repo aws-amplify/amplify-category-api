@@ -177,13 +177,22 @@ export const iamExpression = (options: IamExpressionOptions): Expression => {
 
 /**
  * Creates an expression that allows generic IAM access for principals not associated to CognitoIdentityPool.
+ * `grantedExpressions` run only when that access is granted, for resolvers that track more state than `$isAuthorized`.
  */
-export const generateIAMAccessCheck = (enableIamAccess: boolean, expression: Expression): Expression => {
+export const generateIAMAccessCheck = (
+  enableIamAccess: boolean,
+  expression: Expression,
+  grantedExpressions: Expression[] = [],
+): Expression => {
   if (!enableIamAccess) {
     // No-op if generic IAM access is not enabled.
     return expression;
   }
-  return ifElse(isNonCognitoIAMPrincipal, compoundExpression([setHasAuthExpression, set(ref(IS_AUTHORIZED_FLAG), bool(true))]), expression);
+  return ifElse(
+    isNonCognitoIAMPrincipal,
+    compoundExpression([setHasAuthExpression, set(ref(IS_AUTHORIZED_FLAG), bool(true)), ...grantedExpressions]),
+    expression,
+  );
 };
 
 /**

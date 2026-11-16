@@ -49,11 +49,10 @@ import {
 } from './helpers';
 
 /**
- * The model fields a `condition` must be checked against: those at least one
- * mutation role cannot read. A field every role can read (primary key,
- * timestamps, any field without a field-level read restriction) is always safe
- * to condition on and is left out, so a role whose readable set happens to omit
- * it does not wrongly reject a legitimate condition on it.
+ * The model fields a `condition` is checked against: those at least one mutation
+ * role cannot read. A field every role can read (primary key, timestamps, any
+ * field without a field-level read restriction) is always allowed in a condition,
+ * so it is left out.
  */
 const conditionRestrictedFields = (roles: Array<RoleDefinition>, fields: ReadonlyArray<FieldDefinitionNode>): string[] => {
   const fieldNames = fields.map((field) => field.name.value);
@@ -61,16 +60,11 @@ const conditionRestrictedFields = (roles: Array<RoleDefinition>, fields: Readonl
 };
 
 /**
- * VTL that denies any `condition` referencing a field no matched role can read.
- *
- * Same read-oracle guard as the update resolver: a DynamoDB conditional check
- * leaks whether a guessed value matched (success vs ConditionalCheckFailedException),
- * so a `condition` on a field the caller cannot read is a read oracle on it.
- * `$readableFields` is the union of fields readable by the matched role(s). The
- * condition is serialized once with `util.toJson` and each non-readable model
- * field is matched against that string as `"<field>":`; serializing flattens
- * every `and` / `or` / `not` nesting into one string, so the check is independent
- * of nesting depth and fails closed.
+ * VTL that rejects a `condition` naming a field the caller cannot read, as the
+ * update resolver does. `$readableFields` is the union of the fields readable by
+ * the matched roles. The condition is serialized once and each restricted field
+ * is matched as the JSON object key `"<field>":`, which covers any `and` / `or` /
+ * `not` nesting depth.
  */
 const conditionFieldAccessCheck = (fieldNames: ReadonlyArray<string>): Expression[] => {
   if (fieldNames.length === 0) {
@@ -124,6 +118,7 @@ const iamExpression = (
   hasAdminRolesEnabled = false,
   hasIdentityPoolId: boolean,
   genericIamAccessEnabled: boolean,
+  modelFieldNames: ReadonlyArray<string>,
 ): Expression | null => {
   const expression = new Array<Expression>();
   // allow if using an admin role
@@ -149,7 +144,10 @@ const iamExpression = (
 
   return iff(
     equals(ref('util.authType()'), str(IAM_AUTH_TYPE)),
-    generateIAMAccessCheck(genericIamAccessEnabled, compoundExpression(expression)),
+    // Generic IAM access is granted on every field, so every field is readable in a condition.
+    generateIAMAccessCheck(genericIamAccessEnabled, compoundExpression(expression), [
+      set(ref(READABLE_FIELDS), raw(JSON.stringify(modelFieldNames))),
+    ]),
   );
 };
 
@@ -319,7 +317,13 @@ export const generateAuthExpressionForDelete = (
   }
   if (providers.hasIAM) {
     totalAuthExpressions.push(
-      iamExpression(iamRoles, providers.hasAdminRolesEnabled, providers.hasIdentityPoolId, providers.genericIamAccessEnabled),
+      iamExpression(
+        iamRoles,
+        providers.hasAdminRolesEnabled,
+        providers.hasIdentityPoolId,
+        providers.genericIamAccessEnabled,
+        fields.map((field) => field.name.value),
+      ),
     );
   }
   if (providers.hasLambda) {
@@ -345,9 +349,7 @@ export const generateAuthExpressionForDelete = (
     );
   }
   totalAuthExpressions.push(iff(not(ref(IS_AUTHORIZED_FLAG)), ref('util.unauthorized()')));
-  // An authorized caller must not use `condition` as a read oracle on a field it
-  // cannot read. $readableFields holds the union of fields the matched role(s)
-  // may read; deny a condition on anything outside it.
+  // A field named in `condition` must be readable by the caller.
   totalAuthExpressions.push(
     ...conditionFieldAccessCheck(conditionRestrictedFields(roles, fields)),
     iff(

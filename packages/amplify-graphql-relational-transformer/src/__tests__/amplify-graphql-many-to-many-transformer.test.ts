@@ -14,9 +14,9 @@ import { DeploymentResources, mockSqlDataSourceStrategy, testTransform } from '@
 import { HasOneTransformer, ManyToManyTransformer } from '..';
 import { hasGeneratedDirective, hasGeneratedField } from './test-helpers';
 
-// The update/delete condition read-oracle check emits a $readableFields line built
-// from each model's own readable fields, so a join table and its parent differ on
-// that one line even when their auth is otherwise identical. Strip it before the
+// The update/delete condition check emits a $readableFields line built from each
+// model's own readable fields, so a join table and its parent differ on that one
+// line even when their auth is otherwise identical. Strip it before the
 // inherited-auth equality checks, matching how the $allowedFields lines are stripped.
 const READABLE_FIELDS_LINE = /\n?\s*#set\( \$readableFields = \[[^\]]*\] \)/g;
 
@@ -304,9 +304,9 @@ test('join table inherits auth from first table', () => {
   expect(out.resolvers['Mutation.createFooBar.postAuth.1.req.vtl']).toEqual(out.resolvers['Mutation.createFoo.postAuth.1.req.vtl']);
   expect(out.resolvers['Mutation.deleteFooBar.auth.1.req.vtl']).toEqual(out.resolvers['Mutation.deleteFoo.auth.1.req.vtl']);
   expect(out.resolvers['Mutation.deleteFooBar.postAuth.1.req.vtl']).toEqual(out.resolvers['Mutation.deleteFoo.postAuth.1.req.vtl']);
-  // The condition read-oracle check sets $readableFields from each model's own
-  // readable fields, so the join table and the parent legitimately differ on that
-  // one line; strip it, as the field-set lines below are stripped.
+  // The condition check sets $readableFields from each model's own readable
+  // fields, so the join table and the parent differ on that one line; strip it,
+  // as the field-set lines below are stripped.
   expect(out.resolvers['Mutation.deleteFooBar.auth.1.res.vtl'].replace(READABLE_FIELDS_LINE, '')).toEqual(
     out.resolvers['Mutation.deleteFoo.auth.1.res.vtl'].replace(READABLE_FIELDS_LINE, ''),
   );

@@ -175,10 +175,8 @@ beforeAll(async () => {
 
     # An owner (ownerField: author) may read, update and delete the record, but
     # secret is readable by "Admin" only. The owner's delete grant on secret keeps
-    # them a full-delete role, yet they still cannot read secret -- so naming secret
-    # in an update OR delete condition must be rejected: a DynamoDB conditional
-    # check would otherwise leak secret's value through success vs
-    # ConditionalCheckFailed.
+    # them a full-delete role. A field named in a condition must be readable by
+    # the caller, so the owner may not name secret in an update or delete condition.
     type Project @model
       @auth(rules: [
         { allow: groups, groups: ["Admin"] },
@@ -647,9 +645,9 @@ test('AND per-field dynamic auth rule test', async () => {
 
 describe('mutation condition cannot reference a field the caller cannot read', () => {
   // CLIENT_1 is Admin (can read secret); CLIENT_2 is the owner via author=user2@test.com
-  // (can update title but cannot read secret). Admin seeds a record with a known secret.
+  // (can update title but cannot read secret). Admin seeds a record with a known value.
   let projectId: string;
-  const theSecret = 'top-secret-value';
+  const theSecret = 'condition-value';
 
   beforeAll(async () => {
     const created = await GRAPHQL_CLIENT_1.query(
@@ -703,9 +701,8 @@ describe('mutation condition cannot reference a field the caller cannot read', (
     }
   });
 
-  test('owner update is denied when the read-restricted field is nested beyond the old depth bound', async () => {
-    // Twelve levels of `and` nesting -- deeper than the previous depth-10 walk, so
-    // this would have leaked before the serialized-condition check.
+  test('owner update is denied when the read-restricted field is nested many levels deep', async () => {
+    // Twelve levels of `and` nesting.
     let condition = `{ secret: { eq: "${theSecret}" } }`;
     for (let depth = 0; depth < 12; depth++) {
       condition = `{ and: [${condition}] }`;
