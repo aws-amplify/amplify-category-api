@@ -46,6 +46,7 @@ import {
   CodegenAssets,
   getAdditionalAuthenticationTypes,
   validateAuthorizationModes,
+  PartitioningNestedStackProvider,
 } from './internal';
 import { getStackForScope, walkAndProcessNodes } from './internal/construct-tree';
 import { getDataSourceStrategiesProvider } from './internal/data-source-config';
@@ -210,11 +211,25 @@ export class AmplifyGraphqlApi extends Construct {
       ...(translationBehavior ?? {}),
       allowGen1Patterns: false,
     };
+
+    // Check if automatic partitioning is enabled
+    const enableAutoPartitioning =
+      props.enableAutoPartitioning ??
+      this.node.tryGetContext('amplify-data-auto-partition') === true;
+
     const executeTransformConfig: ExecuteTransformConfig = {
       scope: this,
-      nestedStackProvider: {
-        provide: (nestedStackScope: Construct, name: string) => new NestedStack(nestedStackScope, name),
-      },
+      nestedStackProvider: enableAutoPartitioning
+        ? new PartitioningNestedStackProvider(this, {
+            stackSizeThreshold: props.partitioningConfig?.stackSizeThreshold,
+            maxResolversPerStack: props.partitioningConfig?.maxResolversPerStack,
+            groupRelatedResolvers: props.partitioningConfig?.groupRelatedResolvers,
+            maxCrossStackReferences: props.partitioningConfig?.maxCrossStackReferences,
+          })
+        : {
+            provide: (nestedStackScope: Construct, name: string) =>
+              new NestedStack(nestedStackScope, name),
+          },
       assetProvider,
       synthParameters: {
         amplifyEnvironmentName: amplifyEnvironmentName,
@@ -246,6 +261,24 @@ export class AmplifyGraphqlApi extends Construct {
     };
 
     executeTransform(executeTransformConfig);
+
+    // Log partitioning statistics if enabled
+    if (enableAutoPartitioning) {
+      const provider = executeTransformConfig.nestedStackProvider as PartitioningNestedStackProvider;
+      const stats = provider.getStats();
+
+      console.log(`[Amplify Data] Partitioned into ${stats.totalStacks} nested stacks:`);
+      console.log(`  - Primary stack resources: ${stats.primaryStackResources}`);
+      console.log(`  - Resolver stacks: ${stats.resolverStacks}`);
+      console.log(`  - Total resolvers: ${stats.totalResolvers}`);
+      console.log(`  - Avg resolvers per stack: ${stats.avgResolversPerStack}`);
+      console.log(`  - Max resources in any stack: ${stats.maxResourcesInAnyStack}/500`);
+
+      if (stats.warnings.length > 0) {
+        console.warn('[Amplify Data] Warnings:');
+        stats.warnings.forEach((warning) => console.warn(`  - ${warning}`));
+      }
+    }
 
     this.codegenAssets = new CodegenAssets(this, 'AmplifyCodegenAssets', { modelSchema: definition.schema });
 
