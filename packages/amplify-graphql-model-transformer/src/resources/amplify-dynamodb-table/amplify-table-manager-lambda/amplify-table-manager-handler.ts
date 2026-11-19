@@ -155,7 +155,7 @@ async function isCompleteHandler(event: AWSCDKAsyncCustomResource.IsCompleteRequ
  * @param event CFN event
  * @returns Response object which is sent back to CFN
  */
-const processOnEvent = async (
+export const processOnEvent = async (
   event: AWSCDKAsyncCustomResource.OnEventRequest,
   context: TableManagerContext,
 ): Promise<AWSCDKAsyncCustomResource.OnEventResponse> => {
@@ -373,6 +373,15 @@ const processOnEvent = async (
       } catch (err) {
         if (err instanceof ResourceNotFoundException) {
           console.log('Table to be deleted is not found. Deletion complete.');
+          return result;
+        }
+        // If Create never completed (for example, CloudFormation cancelled it because another resource
+        // failed), PhysicalResourceId is a CloudFormation-generated placeholder rather than a table name.
+        // This function's role may only touch this API's tables, so DescribeTable on the placeholder is
+        // denied instead of returning ResourceNotFound, and the stack would stay in DELETE_FAILED on every
+        // retry. No table was created for this resource, so there is nothing to delete.
+        if (event.PhysicalResourceId !== tableDef.tableName && (err as Error)?.name === 'AccessDeniedException') {
+          console.log(`'${event.PhysicalResourceId}' is not this resource's table '${tableDef.tableName}'. No table to delete.`);
           return result;
         }
         throw err;

@@ -7,6 +7,7 @@ import {
   ContinuousBackupsDescription,
   ContinuousBackupsUnavailableException,
   InternalServerError,
+  ResourceNotFoundException,
 } from '@aws-sdk/client-dynamodb';
 import {
   getNextAtomicUpdate,
@@ -19,6 +20,7 @@ import {
   extractOldTableInputFromEvent,
   isTtlModified,
   processIsComplete,
+  processOnEvent,
 } from '../resources/amplify-dynamodb-table/amplify-table-manager-lambda/amplify-table-manager-handler';
 import * as ddbTableManagerLambda from '../resources/amplify-dynamodb-table/amplify-table-manager-lambda/amplify-table-manager-handler';
 import * as CustomDDB from '../resources/amplify-dynamodb-table/amplify-table-types';
@@ -37,6 +39,7 @@ jest.spyOn(ddbTableManagerLambda, 'getLambdaTags').mockReturnValue(
 const mockDescribeTable = jest.fn();
 const mockDescribeContinuousBackups = jest.fn();
 const mockUpdateContinuousBackups = jest.fn();
+const mockDeleteTable = jest.fn();
 jest.mock('@aws-sdk/client-dynamodb', () => {
   return {
     ...jest.requireActual('@aws-sdk/client-dynamodb'),
@@ -44,6 +47,7 @@ jest.mock('@aws-sdk/client-dynamodb', () => {
       describeTable: (input: any) => mockDescribeTable(input),
       describeContinuousBackups: (input: any) => mockDescribeContinuousBackups(input),
       updateContinuousBackups: (input: any) => mockUpdateContinuousBackups(input),
+      deleteTable: (input: any) => mockDeleteTable(input),
     })),
   };
 });
@@ -1490,6 +1494,71 @@ describe('Custom Resource Lambda Tests', () => {
         invokedFunctionArn: 'arn:aws:lambda:ap-northeast-1:123456789100:function:TableManagerCustomProviderframeworkisComplete',
       });
       expect(IsComplete).toBe(true);
+    });
+  });
+
+  describe('processOnEvent Delete', () => {
+    const context = {
+      invokedFunctionArn: 'arn:aws:lambda:ap-northeast-1:123456789100:function:TableManagerCustomProviderframeworkonEvent',
+    };
+    // The ID CloudFormation assigns when Create is cancelled before the handler returns a table name.
+    const placeholderId = 'mockStack-ResourceTable-1T67GCT6E2YR7';
+    const deleteEvent = (physicalResourceId: string) =>
+      ({
+        RequestType: 'Delete',
+        ServiceToken: 'arn:aws:lambda:ap-northeast-1:123456789100:function:TableManagerCustomProviderframeworkonEvent',
+        ResponseURL: '[redacted]',
+        StackId: 'mockStackId',
+        RequestId: 'mockRequestId',
+        LogicalResourceId: 'ResourceTable',
+        ResourceType: 'Custom::AmplifyDynamoDBTable',
+        ResourceProperties: {
+          tableName: 'mockTable',
+          ServiceToken: 'arn:aws:lambda:ap-northeast-1:123456789100:function:TableManagerCustomProviderframeworkonEvent',
+        },
+        PhysicalResourceId: physicalResourceId,
+      } as const);
+    const accessDenied = () =>
+      Object.assign(new Error(`User is not authorized to perform: dynamodb:DescribeTable on resource: table/${placeholderId}`), {
+        name: 'AccessDeniedException',
+      });
+
+    beforeEach(() => {
+      jest.clearAllMocks();
+    });
+
+    it('deletes the table', async () => {
+      mockDescribeTable.mockResolvedValueOnce({ Table: { TableName: 'mockTable' } });
+      const result = await processOnEvent(deleteEvent('mockTable'), context);
+      expect(result).toEqual({ PhysicalResourceId: 'mockTable' });
+      expect(mockDeleteTable).toHaveBeenCalledWith({ TableName: 'mockTable' });
+    });
+
+    it('succeeds when the table is already gone', async () => {
+      mockDescribeTable.mockRejectedValueOnce(new ResourceNotFoundException({ message: 'not found', $metadata: {} }));
+      const result = await processOnEvent(deleteEvent('mockTable'), context);
+      expect(result).toEqual({ PhysicalResourceId: 'mockTable' });
+      expect(mockDeleteTable).not.toHaveBeenCalled();
+    });
+
+    it('succeeds when Create never completed and the placeholder ID is outside the role scope', async () => {
+      mockDescribeTable.mockRejectedValueOnce(accessDenied());
+      const result = await processOnEvent(deleteEvent(placeholderId), context);
+      expect(result).toEqual({ PhysicalResourceId: placeholderId });
+      expect(mockDescribeTable).toHaveBeenCalledWith({ TableName: placeholderId });
+      expect(mockDeleteTable).not.toHaveBeenCalled();
+    });
+
+    it("still fails on access denied for the resource's own table", async () => {
+      mockDescribeTable.mockRejectedValueOnce(accessDenied());
+      await expect(processOnEvent(deleteEvent('mockTable'), context)).rejects.toThrow('not authorized');
+      expect(mockDeleteTable).not.toHaveBeenCalled();
+    });
+
+    it('still deletes a table that exists under a mismatched ID', async () => {
+      mockDescribeTable.mockResolvedValueOnce({ Table: { TableName: placeholderId } });
+      await processOnEvent(deleteEvent(placeholderId), context);
+      expect(mockDeleteTable).toHaveBeenCalledWith({ TableName: placeholderId });
     });
   });
 });
