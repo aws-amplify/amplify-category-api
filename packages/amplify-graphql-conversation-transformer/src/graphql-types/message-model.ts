@@ -141,6 +141,8 @@ export const createAssistantResponseStreamingMutationInput = (messageModelName: 
       makeInputValueDefinition('accumulatedTurnContent', makeListType(makeNamedType('AmplifyAIContentBlockInput'))),
       makeInputValueDefinition('errors', makeListType(makeNamedType('AmplifyAIConversationTurnErrorInput'))),
       makeInputValueDefinition('p', makeNamedType('String')),
+      makeInputValueDefinition('metrics', makeNamedType('AWSJSON')),
+      makeInputValueDefinition('usage', makeNamedType('AWSJSON')),
     ],
   };
 };
@@ -155,6 +157,24 @@ export const createConversationTurnErrorInput = (): InputObjectTypeDefinitionNod
     ],
   };
 };
+
+export const constructMetricsType = (): ObjectTypeDefinitionNode => ({
+  kind: 'ObjectTypeDefinition',
+  name: { kind: 'Name', value: 'AmplifyAIMetrics' },
+  fields: [makeField('latencyMs', [], makeNamedType('Int'))],
+  directives: [],
+});
+
+export const constructUsageType = (): ObjectTypeDefinitionNode => ({
+  kind: 'ObjectTypeDefinition',
+  name: { kind: 'Name', value: 'AmplifyAIUsage' },
+  fields: [
+    makeField('inputTokens', [], makeNamedType('Int')),
+    makeField('outputTokens', [], makeNamedType('Int')),
+    makeField('totalTokens', [], makeNamedType('Int')),
+  ],
+  directives: [],
+});
 
 export const createAssistantStreamingMutationField = (fieldName: string, inputTypeName: string): FieldDefinitionNode => {
   const args = [makeInputValueDefinition('input', makeNonNullType(makeNamedType(inputTypeName)))];
@@ -282,11 +302,13 @@ const constructConversationMessageModel = (
   const context = makeField('aiContext', [], makeNamedType('AWSJSON'));
   const uiComponents = makeField('toolConfiguration', [], makeNamedType('AmplifyAIToolConfiguration'));
   const associatedUserMessageId = makeField('associatedUserMessageId', [], makeNamedType('ID'));
+  const metrics = makeField('metrics', [], makeNamedType('AmplifyAIMetrics'));
+  const usage = makeField('usage', [], makeNamedType('AmplifyAIUsage'));
 
   const object = {
     ...blankObject(modelName),
     interfaces: [conversationMessageInterface],
-    fields: [id, conversationId, conversationField, role, content, context, uiComponents, associatedUserMessageId],
+    fields: [id, conversationId, conversationField, role, content, context, uiComponents, associatedUserMessageId, metrics, usage],
     directives: typeDirectives,
   };
 
@@ -315,6 +337,8 @@ export const constructStreamResponseType = (): ObjectTypeDefinitionNode => {
       makeField('contentBlockDoneAtIndex', [], makeNamedType('Int')),
 
       makeField('stopReason', [], makeNamedType('String')),
+      makeField('metrics', [], makeNamedType('AmplifyAIMetrics')),
+      makeField('usage', [], makeNamedType('AmplifyAIUsage')),
     ],
   };
 };
