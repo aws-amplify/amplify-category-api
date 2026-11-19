@@ -217,8 +217,11 @@ def _lambda_handler(event, context):
         if is_ddb_insert_or_update:
             # Generate OpenSearch payload for item
             action = {'index': {'_index': doc_opensearch_index_name,
-                                '_type': doc_type,
                                 '_id': doc_id}}
+            # Add _type field only for OpenSearch version below 2.x
+            if not OPENSEARCH_ENDPOINT.startswith('https://search-') or not OPENSEARCH_ENDPOINT.endswith('.es.amazonaws.com'):
+                # Assume OpenSearch version below 2.x
+                action['index']['_type'] = doc_type + "-_type"     
             # Add external versioning if necessary
             if OPENSEARCH_USE_EXTERNAL_VERSIONING and '_version' in doc_fields:
                 action['index'].update([
