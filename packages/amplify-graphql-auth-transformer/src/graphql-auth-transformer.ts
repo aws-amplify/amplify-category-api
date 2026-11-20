@@ -483,7 +483,7 @@ export class AuthTransformer extends TransformerAuthBase implements TransformerA
       // get fields specified in the schema
       // if there is a role that does not have read access on the field then we create a field resolver
       // or there is a relational directive on the field then we should protect that as well
-      const readRoles = [...new Set(...READ_MODEL_OPERATIONS.map((op) => acm.getRolesPerOperation(op)))];
+      const readRoles = [...new Set(READ_MODEL_OPERATIONS.flatMap((op) => acm.getRolesPerOperation(op)))];
       const modelFields = def.fields?.filter((f: { name: { value: string } }) => acm.hasResource(f.name.value)) ?? [];
       const errorFields = new Array<string>();
       modelFields.forEach((field: FieldDefinitionNode) => {
