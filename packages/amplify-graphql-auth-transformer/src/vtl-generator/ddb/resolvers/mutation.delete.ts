@@ -17,6 +17,9 @@ import {
   nul,
   ifElse,
   or,
+  and,
+  qref,
+  obj,
 } from 'graphql-mapping-template';
 import {
   API_KEY_AUTH_TYPE,
@@ -29,6 +32,8 @@ import {
   OIDC_AUTH_TYPE,
   RoleDefinition,
   splitRoles,
+  READABLE_FIELDS,
+  DENIED_FIELDS,
 } from '../../../utils';
 import { setHasAuthExpression } from '../../common';
 import {
@@ -44,6 +49,54 @@ import {
 } from './helpers';
 
 /**
+ * The model fields a `condition` is checked against: those at least one mutation
+ * role cannot read. A field every role can read (primary key, timestamps, any
+ * field without a field-level read restriction) is always allowed in a condition,
+ * so it is left out.
+ */
+const conditionRestrictedFields = (roles: Array<RoleDefinition>, fields: ReadonlyArray<FieldDefinitionNode>): string[] => {
+  const fieldNames = fields.map((field) => field.name.value);
+  return fieldNames.filter((fieldName) => roles.some((role) => !(role.readableFields ?? fieldNames).includes(fieldName)));
+};
+
+/**
+ * VTL that rejects a `condition` naming a field the caller cannot read, as the
+ * update resolver does. `$readableFields` is the union of the fields readable by
+ * the matched roles. The condition is serialized once and each restricted field
+ * is matched as the JSON object key `"<field>":`, which covers any `and` / `or` /
+ * `not` nesting depth.
+ */
+const conditionFieldAccessCheck = (fieldNames: ReadonlyArray<string>): Expression[] => {
+  if (fieldNames.length === 0) {
+    return [];
+  }
+  return [
+    iff(
+      not(methodCall(ref('util.isNull'), ref('ctx.args.condition'))),
+      compoundExpression([
+        set(ref('conditionJson'), methodCall(ref('util.toJson'), ref('ctx.args.condition'))),
+        set(ref('conditionFieldNames'), raw(JSON.stringify(fieldNames))),
+        forEach(ref('conditionField'), ref('conditionFieldNames'), [
+          // Needle is the field name as a JSON object key: util.toJson quotes the
+          // name without a literal quote in the template, and `:` pins it to a key
+          // position rather than a substring of a value. The `${...}` is Velocity
+          // interpolation in the generated VTL, not a JS template literal.
+          // eslint-disable-next-line no-template-curly-in-string
+          set(ref('conditionFieldKey'), raw('"${util.toJson($conditionField)}:"')),
+          iff(
+            and([
+              not(methodCall(ref(`${READABLE_FIELDS}.contains`), ref('conditionField'))),
+              methodCall(ref('conditionJson.contains'), ref('conditionFieldKey')),
+            ]),
+            qref(methodCall(ref(`${DENIED_FIELDS}.put`), ref('conditionField'), str(''))),
+          ),
+        ]),
+      ]),
+    ),
+  ];
+};
+
+/**
  * There is only one role for ApiKey we can use the first index
  */
 const apiKeyExpression = (roles: Array<RoleDefinition>): Expression | null => {
@@ -51,7 +104,10 @@ const apiKeyExpression = (roles: Array<RoleDefinition>): Expression | null => {
   if (roles.length === 0) {
     return iff(equals(ref('util.authType()'), str(API_KEY_AUTH_TYPE)), ref('util.unauthorized()'));
   }
-  expression.push(set(ref(IS_AUTHORIZED_FLAG), bool(true)));
+  expression.push(
+    set(ref(`${READABLE_FIELDS}`), raw(JSON.stringify(roles[0].readableFields ?? []))),
+    set(ref(IS_AUTHORIZED_FLAG), bool(true)),
+  );
   return iff(equals(ref('util.authType()'), str(API_KEY_AUTH_TYPE)), compoundExpression(expression));
 };
 /**
@@ -62,6 +118,7 @@ const iamExpression = (
   hasAdminRolesEnabled = false,
   hasIdentityPoolId: boolean,
   genericIamAccessEnabled: boolean,
+  modelFieldNames: ReadonlyArray<string>,
 ): Expression | null => {
   const expression = new Array<Expression>();
   // allow if using an admin role
@@ -70,7 +127,16 @@ const iamExpression = (
   }
   if (roles.length > 0) {
     roles.forEach((role) => {
-      expression.push(iamCheck(role.claim!, set(ref(IS_AUTHORIZED_FLAG), bool(true)), hasIdentityPoolId));
+      expression.push(
+        iamCheck(
+          role.claim!,
+          compoundExpression([
+            qref(methodCall(ref(`${READABLE_FIELDS}.addAll`), raw(JSON.stringify(role.readableFields ?? [])))),
+            set(ref(IS_AUTHORIZED_FLAG), bool(true)),
+          ]),
+          hasIdentityPoolId,
+        ),
+      );
     });
   } else {
     expression.push(ref('util.unauthorized()'));
@@ -78,7 +144,10 @@ const iamExpression = (
 
   return iff(
     equals(ref('util.authType()'), str(IAM_AUTH_TYPE)),
-    generateIAMAccessCheck(genericIamAccessEnabled, compoundExpression(expression)),
+    // Generic IAM access is granted on every field, so every field is readable in a condition.
+    generateIAMAccessCheck(genericIamAccessEnabled, compoundExpression(expression), [
+      set(ref(READABLE_FIELDS), raw(JSON.stringify(modelFieldNames))),
+    ]),
   );
 };
 
@@ -90,7 +159,10 @@ const lambdaExpression = (roles: Array<RoleDefinition>): Expression | null => {
   if (roles.length === 0) {
     return iff(equals(ref('util.authType()'), str(LAMBDA_AUTH_TYPE)), ref('util.unauthorized()'));
   }
-  expression.push(set(ref(IS_AUTHORIZED_FLAG), bool(true)));
+  expression.push(
+    set(ref(`${READABLE_FIELDS}`), raw(JSON.stringify(roles[0].readableFields ?? []))),
+    set(ref(IS_AUTHORIZED_FLAG), bool(true)),
+  );
 
   return iff(equals(ref('util.authType()'), str(LAMBDA_AUTH_TYPE)), compoundExpression(expression));
 };
@@ -99,7 +171,12 @@ const generateStaticRoleExpression = (roles: Array<RoleDefinition>): Array<Expre
   const staticRoleExpression: Array<Expression> = [];
   const privateRoleIdx = roles.findIndex((r) => r.strategy === 'private');
   if (privateRoleIdx > -1) {
-    staticRoleExpression.push(set(ref(IS_AUTHORIZED_FLAG), bool(true)));
+    // A private role matches unconditionally; its readable fields always join the
+    // condition set.
+    staticRoleExpression.push(
+      qref(methodCall(ref(`${READABLE_FIELDS}.addAll`), raw(JSON.stringify(roles[privateRoleIdx].readableFields ?? [])))),
+      set(ref(IS_AUTHORIZED_FLAG), bool(true)),
+    );
     roles.splice(privateRoleIdx, -1);
   }
   if (roles.length > 0) {
@@ -107,12 +184,19 @@ const generateStaticRoleExpression = (roles: Array<RoleDefinition>): Array<Expre
       iff(
         not(ref(IS_AUTHORIZED_FLAG)),
         compoundExpression([
-          set(ref('staticGroupRoles'), raw(JSON.stringify(roles.map((r) => ({ claim: r.claim, entity: r.entity }))))),
+          set(
+            ref('staticGroupRoles'),
+            raw(JSON.stringify(roles.map((r) => ({ claim: r.claim, entity: r.entity, readableFields: r.readableFields ?? [] })))),
+          ),
           forEach(/** for */ ref('groupRole'), /** in */ ref('staticGroupRoles'), [
             set(ref('groupsInToken'), getIdentityClaimExp(ref('groupRole.claim'), list([]))),
             iff(
               methodCall(ref('groupsInToken.contains'), ref('groupRole.entity')),
-              compoundExpression([set(ref(IS_AUTHORIZED_FLAG), bool(true)), raw('#break')]),
+              compoundExpression([
+                qref(methodCall(ref(`${READABLE_FIELDS}.addAll`), ref('groupRole.readableFields'))),
+                set(ref(IS_AUTHORIZED_FLAG), bool(true)),
+                raw('#break'),
+              ]),
             ),
           ]),
         ]),
@@ -139,6 +223,7 @@ const dynamicGroupRoleExpression = (roles: Array<RoleDefinition>, fields: Readon
               compoundExpression([
                 generateOwnerMultiClaimExpression(role.claim!, `ownerClaim${idx}`),
                 generateOwnerClaimListExpression(role.claim!, `ownerClaimsList${idx}`),
+                set(ref(`ownerReadableFields${idx}`), raw(JSON.stringify(role.readableFields ?? []))),
                 ...(entityIsList
                   ? [
                       forEach(ref('allowedOwner'), ref(`ownerEntity${idx}`), [
@@ -147,7 +232,10 @@ const dynamicGroupRoleExpression = (roles: Array<RoleDefinition>, fields: Readon
                             equals(ref('allowedOwner'), ref(`ownerClaim${idx}`)),
                             methodCall(ref(`ownerClaimsList${idx}.contains`), ref('allowedOwner')),
                           ]),
-                          set(ref(IS_AUTHORIZED_FLAG), bool(true)),
+                          compoundExpression([
+                            qref(methodCall(ref(`${READABLE_FIELDS}.addAll`), ref(`ownerReadableFields${idx}`))),
+                            set(ref(IS_AUTHORIZED_FLAG), bool(true)),
+                          ]),
                         ),
                       ]),
                     ]
@@ -157,7 +245,10 @@ const dynamicGroupRoleExpression = (roles: Array<RoleDefinition>, fields: Readon
                           equals(ref(`ownerEntity${idx}`), ref(`ownerClaim${idx}`)),
                           methodCall(ref(`ownerClaimsList${idx}.contains`), ref(`ownerEntity${idx}`)),
                         ]),
-                        set(ref(IS_AUTHORIZED_FLAG), bool(true)),
+                        compoundExpression([
+                          qref(methodCall(ref(`${READABLE_FIELDS}.addAll`), ref(`ownerReadableFields${idx}`))),
+                          set(ref(IS_AUTHORIZED_FLAG), bool(true)),
+                        ]),
                       ),
                     ]),
               ]),
@@ -177,6 +268,7 @@ const dynamicGroupRoleExpression = (roles: Array<RoleDefinition>, fields: Readon
               methodCall(ref('util.defaultIfNull'), ref(`ctx.result.${role.entity}`), entityIsList ? list([]) : nul()),
             ),
             set(ref(`groupClaim${idx}`), getIdentityClaimExp(str(role.claim!), list([]))),
+            set(ref(`groupReadableFields${idx}`), raw(JSON.stringify(role.readableFields ?? []))),
             iff(
               methodCall(ref('util.isString'), ref(`groupClaim${idx}`)),
               ifElse(
@@ -190,7 +282,10 @@ const dynamicGroupRoleExpression = (roles: Array<RoleDefinition>, fields: Readon
                 entityIsList
                   ? methodCall(ref(`groupEntity${idx}.contains`), ref('userGroup'))
                   : equals(ref(`groupEntity${idx}`), ref('userGroup')),
-                set(ref(IS_AUTHORIZED_FLAG), bool(true)),
+                compoundExpression([
+                  qref(methodCall(ref(`${READABLE_FIELDS}.addAll`), ref(`groupReadableFields${idx}`))),
+                  set(ref(IS_AUTHORIZED_FLAG), bool(true)),
+                ]),
               ),
             ]),
           ]),
@@ -211,13 +306,24 @@ export const generateAuthExpressionForDelete = (
 ): string => {
   const { cognitoStaticRoles, cognitoDynamicRoles, oidcStaticRoles, oidcDynamicRoles, apiKeyRoles, iamRoles, lambdaRoles } =
     splitRoles(roles);
-  const totalAuthExpressions: Array<Expression> = [setHasAuthExpression, set(ref(IS_AUTHORIZED_FLAG), bool(false))];
+  const totalAuthExpressions: Array<Expression> = [
+    setHasAuthExpression,
+    set(ref(IS_AUTHORIZED_FLAG), bool(false)),
+    set(ref(`${READABLE_FIELDS}`), list([])),
+    set(ref(`${DENIED_FIELDS}`), obj({})),
+  ];
   if (providers.hasApiKey) {
     totalAuthExpressions.push(apiKeyExpression(apiKeyRoles));
   }
   if (providers.hasIAM) {
     totalAuthExpressions.push(
-      iamExpression(iamRoles, providers.hasAdminRolesEnabled, providers.hasIdentityPoolId, providers.genericIamAccessEnabled),
+      iamExpression(
+        iamRoles,
+        providers.hasAdminRolesEnabled,
+        providers.hasIdentityPoolId,
+        providers.genericIamAccessEnabled,
+        fields.map((field) => field.name.value),
+      ),
     );
   }
   if (providers.hasLambda) {
@@ -243,5 +349,13 @@ export const generateAuthExpressionForDelete = (
     );
   }
   totalAuthExpressions.push(iff(not(ref(IS_AUTHORIZED_FLAG)), ref('util.unauthorized()')));
+  // A field named in `condition` must be readable by the caller.
+  totalAuthExpressions.push(
+    ...conditionFieldAccessCheck(conditionRestrictedFields(roles, fields)),
+    iff(
+      ref(`${DENIED_FIELDS}.keySet().size() > 0`),
+      methodCall(ref('util.error'), str(`Unauthorized on \${${DENIED_FIELDS}.keySet()}`), str('Unauthorized')),
+    ),
+  );
   return printBlock('Authorization Steps')(compoundExpression([...totalAuthExpressions, emptyPayload]));
 };

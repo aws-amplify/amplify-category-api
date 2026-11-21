@@ -266,6 +266,9 @@ export const ON_UPDATE_FIELD = "onUpdate";
 export const READ_MODEL_OPERATIONS: ModelOperation[];
 
 // @public (undocumented)
+export const READABLE_FIELDS = "readableFields";
+
+// @public (undocumented)
 export const RELATIONAL_DIRECTIVES: string[];
 
 // @public (undocumented)
@@ -292,6 +295,8 @@ export interface RoleDefinition {
     nullAllowedFields?: Array<string>;
     // (undocumented)
     provider: AuthProvider;
+    // (undocumented)
+    readableFields?: Array<string>;
     // (undocumented)
     static: boolean;
     // (undocumented)

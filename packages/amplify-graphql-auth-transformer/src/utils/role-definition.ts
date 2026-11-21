@@ -15,6 +15,10 @@ export interface RoleDefinition {
   areAllFieldsAllowed?: boolean;
   areAllFieldsNullAllowed?: boolean;
   isEntityList?: boolean;
+  // Fields this role may READ. Update/delete auth accumulates these per matched
+  // role; a field named in a mutation `condition` must be one of them. Read
+  // permission is distinct from `allowedFields` (write).
+  readableFields?: Array<string>;
 }
 
 /**
