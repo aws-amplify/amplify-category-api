@@ -180,9 +180,42 @@ function _verifyAmplifyBackendCompatability {
   REPO_DIR="amplify-backend"
   # Fetch the latest release tag
   echo "Fetching the latest release tag from GitHub"
-  LATEST_RELEASE_JSON=$(curl -s https://api.github.com/repos/aws-amplify/amplify-backend/releases/latest)
-  # Extract the tag name
-  LATEST_RELEASE_TAG=$(echo "${LATEST_RELEASE_JSON}" | jq -r '.tag_name')
+  # Resolve the latest amplify-backend release tag before cloning. Two historical
+  # failure modes to guard against:
+  #   1. The GitHub REST API without a token is limited to 60 requests/hour per
+  #      source IP, shared across this account's CI runners. When that budget is
+  #      exhausted the response has no `tag_name`, jq yields "null", and the clone
+  #      below fails with "Remote branch null not found" (exit 128).
+  #   2. A transient API error returns a non-release body for the same reason.
+  # So authenticate when a token is available (raises the limit to 5000/hour),
+  # retry a few times, and on persistent failure exit with a clear message rather
+  # than cloning an invalid tag. GITHUB_TOKEN is optional: the call falls back to
+  # unauthenticated when it is unset, so this never sends an empty credential.
+  GH_AUTH_HEADER=()
+  if [ -n "${GITHUB_TOKEN:-}" ]; then
+    GH_AUTH_HEADER=(-H "Authorization: Bearer ${GITHUB_TOKEN}")
+    echo "Using authenticated GitHub API requests"
+  else
+    echo "GITHUB_TOKEN not set; using unauthenticated GitHub API requests (rate-limited)"
+  fi
+  LATEST_RELEASE_TAG=""
+  for attempt in 1 2 3; do
+    # Expand the optional header array in a way that is safe under `set -u` even
+    # when it is empty (bash 3.2 errors on a bare "${arr[@]}" for an empty array).
+    LATEST_RELEASE_JSON=$(curl -sf ${GH_AUTH_HEADER[@]+"${GH_AUTH_HEADER[@]}"} https://api.github.com/repos/aws-amplify/amplify-backend/releases/latest || true)
+    LATEST_RELEASE_TAG=$(echo "${LATEST_RELEASE_JSON}" | jq -r '.tag_name // empty')
+    if [ -n "${LATEST_RELEASE_TAG}" ]; then
+      break
+    fi
+    echo "Attempt ${attempt}: could not resolve a release tag; GitHub API response was:"
+    echo "${LATEST_RELEASE_JSON}" | head -c 500
+    sleep 5
+  done
+  if [ -z "${LATEST_RELEASE_TAG}" ]; then
+    echo "ERROR: Could not resolve the latest amplify-backend release tag from GitHub after 3 attempts."
+    echo "This is usually GitHub API rate limiting; set GITHUB_TOKEN in this job to raise the limit."
+    exit 1
+  fi
   echo "Latest release tag: ${LATEST_RELEASE_TAG}"
   # Clone the repository at the specific tag
   echo "Cloning the repository at tag ${LATEST_RELEASE_TAG}"
