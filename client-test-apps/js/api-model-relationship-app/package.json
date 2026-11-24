@@ -37,7 +37,8 @@
   "resolutions": {
     "joi": "17.7.0",
     "glob": "10.4.5",
-    "rimraf": "5.0.10"
+    "rimraf": "5.0.10",
+    "webpack": "5.111.1"
   },
   "scripts": {
     "start": "react-scripts start",
