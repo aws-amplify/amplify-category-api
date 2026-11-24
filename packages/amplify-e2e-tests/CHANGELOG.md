@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.22.26](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-tests@3.22.25...amplify-category-api-e2e-tests@3.22.26) (2026-11-24)
+
+### Bug Fixes
+
+- **graphql-auth-transformer:** collect roles from all read operations ([#3558](https://github.com/aws-amplify/amplify-category-api/issues/3558)) ([26027b0](https://github.com/aws-amplify/amplify-category-api/commit/26027b0ca77f350c0c3ae5395f5610c9e77b7ba0))
+
 ## [3.22.25](https://github.com/aws-amplify/amplify-category-api/compare/amplify-category-api-e2e-tests@3.22.24...amplify-category-api-e2e-tests@3.22.25) (2026-09-28)
 
 ### Bug Fixes
