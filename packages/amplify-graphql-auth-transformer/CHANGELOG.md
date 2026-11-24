@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.2.11](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-auth-transformer@4.2.10...@aws-amplify/graphql-auth-transformer@4.2.11) (2026-11-24)
+
+### Bug Fixes
+
+- **graphql-auth-transformer:** collect roles from all read operations ([#3557](https://github.com/aws-amplify/amplify-category-api/issues/3557)) ([a768761](https://github.com/aws-amplify/amplify-category-api/commit/a7687617e88f09cc2cb1b83a6dc282e863505a28))
+
 ## [4.2.10](https://github.com/aws-amplify/amplify-category-api/compare/@aws-amplify/graphql-auth-transformer@4.2.9...@aws-amplify/graphql-auth-transformer@4.2.10) (2026-09-30)
 
 ### Bug Fixes
