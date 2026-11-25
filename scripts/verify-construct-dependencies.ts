@@ -2,10 +2,15 @@ import * as process from 'process';
 import * as path from 'path';
 import * as fs from 'fs';
 import * as lockfile from '@yarnpkg/lockfile';
+import * as semver from 'semver';
 
 type DepsClosure = {
   repoDeps: Array<string>;
   registryDeps: Array<string>;
+  // Requests whose yarn.lock version does not satisfy the requested range, usually because a root
+  // `resolutions` entry forced it. npm validates bundled dependencies against these ranges, so a
+  // mismatch breaks `npm ci` for consumers of the construct.
+  unsatisfiedDeps: Array<string>;
 };
 
 type ConstructPackageConfiguration = {
@@ -101,7 +106,7 @@ const computeDepsClosure = (deps: string[]): DepsClosure => {
   const repoPackageClosures = getRepoPackages();
   const lockfileContents = lockfile.parse(fs.readFileSync('yarn.lock', 'utf8')).object;
   const seenDeps = new Set<string>();
-  const closure: DepsClosure = { repoDeps: [], registryDeps: [] };
+  const closure: DepsClosure = { repoDeps: [], registryDeps: [], unsatisfiedDeps: [] };
 
   const traverse = (path: string[], currDep: string): void => {
     if (shouldExcludeDependency([...path, stripSemver(currDep)]) || seenDeps.has(currDep)) {
@@ -116,7 +121,11 @@ const computeDepsClosure = (deps: string[]): DepsClosure => {
       repoPackageClosures[currDep].forEach((nextDep) => traverse(newPath, nextDep));
     } else {
       closure.registryDeps.push(currDep);
-      const dependencies = lockfileContents[currDep].dependencies ?? {};
+      const { version: lockedVersion, dependencies = {} } = lockfileContents[currDep];
+      const range = currDep.slice(stripSemver(currDep).length + 1);
+      if (semver.validRange(range) && !semver.satisfies(lockedVersion, range)) {
+        closure.unsatisfiedDeps.push(`${[...path, currDep].join(' > ')} is locked to ${lockedVersion}`);
+      }
       Object.entries(dependencies)
         .map(([name, version]) => `${name}@${version}`)
         .forEach((nextDep) => traverse(newPath, nextDep));
@@ -233,6 +242,7 @@ const main = (): void => {
         ...validateConstructDependenciesAreConfigured(packageDir, dedupedDepListWithoutSemver),
         ...validateConstructBundledDependenciesAreConfigured(packageDir, dedupedDepListWithoutSemver),
         ...validateConstructDevDependenciesAreConfigured(packageDir, dedupedDepListWithoutSemver),
+        ...fullDepsClosure.unsatisfiedDeps.map((dep) => `${dep} in ${packageDir}, which does not satisfy the requested range`),
       );
     });
 

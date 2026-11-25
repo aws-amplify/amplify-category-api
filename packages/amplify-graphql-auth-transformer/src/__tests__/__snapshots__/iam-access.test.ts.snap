@@ -172,14 +172,17 @@ $util.qr($ctx.stash.put(\\"hasAuth\\", true))
 #set( $isAuthorized = false )
 #set( $allowedFields = [] )
 #set( $nullAllowedFields = [] )
+#set( $readableFields = [] )
 #set( $deniedFields = {} )
 #if( $util.authType() == \\"API Key Authorization\\" )
+  #set( $readableFields = [\\"id\\",\\"title\\",\\"createdAt\\",\\"updatedAt\\"] )
   #set( $isAuthorized = true )
 #end
 #if( $util.authType() == \\"IAM Authorization\\" )
   #if( $util.authType() == \\"IAM Authorization\\" && $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )
     $util.qr($ctx.stash.put(\\"hasAuth\\", true))
     #set( $isAuthorized = true )
+    #set( $readableFields = [\\"id\\",\\"title\\",\\"createdAt\\",\\"updatedAt\\"] )
   #else
 $util.unauthorized()
   #end
@@ -220,19 +223,26 @@ exports[`ddb simple model with apiKey and iam access 5`] = `
 "## [Start] Authorization Steps. **
 $util.qr($ctx.stash.put(\\"hasAuth\\", true))
 #set( $isAuthorized = false )
+#set( $readableFields = [] )
+#set( $deniedFields = {} )
 #if( $util.authType() == \\"API Key Authorization\\" )
+  #set( $readableFields = [\\"id\\",\\"title\\",\\"createdAt\\",\\"updatedAt\\"] )
   #set( $isAuthorized = true )
 #end
 #if( $util.authType() == \\"IAM Authorization\\" )
   #if( $util.authType() == \\"IAM Authorization\\" && $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )
     $util.qr($ctx.stash.put(\\"hasAuth\\", true))
     #set( $isAuthorized = true )
+    #set( $readableFields = [\\"id\\",\\"title\\",\\"createdAt\\",\\"updatedAt\\"] )
   #else
 $util.unauthorized()
   #end
 #end
 #if( !$isAuthorized )
 $util.unauthorized()
+#end
+#if( $deniedFields.keySet().size() > 0 )
+  $util.error(\\"Unauthorized on \${deniedFields.keySet()}\\", \\"Unauthorized\\")
 #end
 $util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 ## [End] Authorization Steps. **"
@@ -466,8 +476,10 @@ $util.qr($ctx.stash.put(\\"hasAuth\\", true))
 #set( $isAuthorized = false )
 #set( $allowedFields = [] )
 #set( $nullAllowedFields = [] )
+#set( $readableFields = [] )
 #set( $deniedFields = {} )
 #if( $util.authType() == \\"API Key Authorization\\" )
+  #set( $readableFields = [\\"id\\",\\"title\\",\\"createdAt\\",\\"updatedAt\\"] )
   #set( $isAuthorized = true )
 #end
 #if( $util.authType() == \\"IAM Authorization\\" )
@@ -506,7 +518,10 @@ exports[`ddb simple model with apiKey and no iam access 5`] = `
 "## [Start] Authorization Steps. **
 $util.qr($ctx.stash.put(\\"hasAuth\\", true))
 #set( $isAuthorized = false )
+#set( $readableFields = [] )
+#set( $deniedFields = {} )
 #if( $util.authType() == \\"API Key Authorization\\" )
+  #set( $readableFields = [\\"id\\",\\"title\\",\\"createdAt\\",\\"updatedAt\\"] )
   #set( $isAuthorized = true )
 #end
 #if( $util.authType() == \\"IAM Authorization\\" )
@@ -514,6 +529,9 @@ $util.unauthorized()
 #end
 #if( !$isAuthorized )
 $util.unauthorized()
+#end
+#if( $deniedFields.keySet().size() > 0 )
+  $util.error(\\"Unauthorized on \${deniedFields.keySet()}\\", \\"Unauthorized\\")
 #end
 $util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 ## [End] Authorization Steps. **"
@@ -711,13 +729,16 @@ $util.qr($ctx.stash.put(\\"hasAuth\\", true))
 #set( $isAuthorized = false )
 #set( $allowedFields = [] )
 #set( $nullAllowedFields = [] )
+#set( $readableFields = [] )
 #set( $deniedFields = {} )
 #if( $util.authType() == \\"IAM Authorization\\" )
   #if( $util.authType() == \\"IAM Authorization\\" && $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )
     $util.qr($ctx.stash.put(\\"hasAuth\\", true))
     #set( $isAuthorized = true )
+    #set( $readableFields = [\\"id\\",\\"title\\",\\"createdAt\\",\\"updatedAt\\"] )
   #else
     #if( $ctx.identity.userArn == $ctx.stash.unauthRole )
+      $util.qr($readableFields.addAll([\\"id\\",\\"title\\",\\"createdAt\\",\\"updatedAt\\"]))
       #set( $isAuthorized = true )
     #end
   #end
@@ -758,18 +779,25 @@ exports[`ddb simple model with iam provider and iam access 5`] = `
 "## [Start] Authorization Steps. **
 $util.qr($ctx.stash.put(\\"hasAuth\\", true))
 #set( $isAuthorized = false )
+#set( $readableFields = [] )
+#set( $deniedFields = {} )
 #if( $util.authType() == \\"IAM Authorization\\" )
   #if( $util.authType() == \\"IAM Authorization\\" && $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )
     $util.qr($ctx.stash.put(\\"hasAuth\\", true))
     #set( $isAuthorized = true )
+    #set( $readableFields = [\\"id\\",\\"title\\",\\"createdAt\\",\\"updatedAt\\"] )
   #else
     #if( $ctx.identity.userArn == $ctx.stash.unauthRole )
+      $util.qr($readableFields.addAll([\\"id\\",\\"title\\",\\"createdAt\\",\\"updatedAt\\"]))
       #set( $isAuthorized = true )
     #end
   #end
 #end
 #if( !$isAuthorized )
 $util.unauthorized()
+#end
+#if( $deniedFields.keySet().size() > 0 )
+  $util.error(\\"Unauthorized on \${deniedFields.keySet()}\\", \\"Unauthorized\\")
 #end
 $util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 ## [End] Authorization Steps. **"
@@ -1018,6 +1046,7 @@ $util.qr($ctx.stash.put(\\"hasAuth\\", true))
 #set( $isAuthorized = false )
 #set( $allowedFields = [] )
 #set( $nullAllowedFields = [] )
+#set( $readableFields = [] )
 #set( $deniedFields = {} )
 #if( $util.authType() == \\"API Key Authorization\\" )
 $util.unauthorized()
@@ -1026,8 +1055,10 @@ $util.unauthorized()
   #if( $util.authType() == \\"IAM Authorization\\" && $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )
     $util.qr($ctx.stash.put(\\"hasAuth\\", true))
     #set( $isAuthorized = true )
+    #set( $readableFields = [\\"id\\",\\"title\\",\\"createdAt\\",\\"updatedAt\\"] )
   #else
     #if( $ctx.identity.userArn == $ctx.stash.unauthRole )
+      $util.qr($readableFields.addAll([\\"id\\",\\"title\\",\\"createdAt\\",\\"updatedAt\\"]))
       #set( $isAuthorized = true )
     #end
   #end
@@ -1068,6 +1099,8 @@ exports[`ddb simple model with iam provider and iam access and non default AWS_I
 "## [Start] Authorization Steps. **
 $util.qr($ctx.stash.put(\\"hasAuth\\", true))
 #set( $isAuthorized = false )
+#set( $readableFields = [] )
+#set( $deniedFields = {} )
 #if( $util.authType() == \\"API Key Authorization\\" )
 $util.unauthorized()
 #end
@@ -1075,14 +1108,19 @@ $util.unauthorized()
   #if( $util.authType() == \\"IAM Authorization\\" && $util.isNull($ctx.identity.cognitoIdentityPoolId) && $util.isNull($ctx.identity.cognitoIdentityId) )
     $util.qr($ctx.stash.put(\\"hasAuth\\", true))
     #set( $isAuthorized = true )
+    #set( $readableFields = [\\"id\\",\\"title\\",\\"createdAt\\",\\"updatedAt\\"] )
   #else
     #if( $ctx.identity.userArn == $ctx.stash.unauthRole )
+      $util.qr($readableFields.addAll([\\"id\\",\\"title\\",\\"createdAt\\",\\"updatedAt\\"]))
       #set( $isAuthorized = true )
     #end
   #end
 #end
 #if( !$isAuthorized )
 $util.unauthorized()
+#end
+#if( $deniedFields.keySet().size() > 0 )
+  $util.error(\\"Unauthorized on \${deniedFields.keySet()}\\", \\"Unauthorized\\")
 #end
 $util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 ## [End] Authorization Steps. **"
@@ -1335,9 +1373,11 @@ $util.qr($ctx.stash.put(\\"hasAuth\\", true))
 #set( $isAuthorized = false )
 #set( $allowedFields = [] )
 #set( $nullAllowedFields = [] )
+#set( $readableFields = [] )
 #set( $deniedFields = {} )
 #if( $util.authType() == \\"IAM Authorization\\" )
   #if( $ctx.identity.userArn == $ctx.stash.unauthRole )
+    $util.qr($readableFields.addAll([\\"id\\",\\"title\\",\\"createdAt\\",\\"updatedAt\\"]))
     #set( $isAuthorized = true )
   #end
 #end
@@ -1374,13 +1414,19 @@ exports[`ddb simple model with iam provider and no iam access 5`] = `
 "## [Start] Authorization Steps. **
 $util.qr($ctx.stash.put(\\"hasAuth\\", true))
 #set( $isAuthorized = false )
+#set( $readableFields = [] )
+#set( $deniedFields = {} )
 #if( $util.authType() == \\"IAM Authorization\\" )
   #if( $ctx.identity.userArn == $ctx.stash.unauthRole )
+    $util.qr($readableFields.addAll([\\"id\\",\\"title\\",\\"createdAt\\",\\"updatedAt\\"]))
     #set( $isAuthorized = true )
   #end
 #end
 #if( !$isAuthorized )
 $util.unauthorized()
+#end
+#if( $deniedFields.keySet().size() > 0 )
+  $util.error(\\"Unauthorized on \${deniedFields.keySet()}\\", \\"Unauthorized\\")
 #end
 $util.toJson({\\"version\\":\\"2018-05-29\\",\\"payload\\":{}})
 ## [End] Authorization Steps. **"
