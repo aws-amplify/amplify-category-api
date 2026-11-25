@@ -30,6 +30,7 @@ import { authConfigHasApiKey, checkIfAuthExists, getAppSyncAuthConfig, getAppSyn
 import { appSyncAuthTypeToAuthConfig } from './utils/auth-config-to-app-sync-auth-type-bi-di-mapper';
 import { printApiKeyWarnings } from './utils/print-api-key-warnings';
 import { conflictResolutionToResolverConfig } from './utils/resolver-config-to-conflict-resolution-bi-di-mapper';
+import { preserveSyncFieldsOnDisable } from './utils/preserve-sync-fields';
 
 // keep in sync with ServiceName in amplify-category-function, but probably it will not change
 const FunctionServiceNameLambdaFunction = 'Lambda';
@@ -135,6 +136,7 @@ class CfnApiArtifactHandler implements ApiArtifactHandler {
     // Because we rely on an in-place update for 'NEW' lambda conflictResolution types, we
     // execute this behavior before the call to `updateAppsyncCLIInputs`.
     if (updates.conflictResolution) {
+      await this.maybePreserveSyncFieldsOnDisable(updates, resourceDir);
       updates.conflictResolution = await this.createResolverResources(updates.conflictResolution);
       await writeResolverConfig(updates.conflictResolution, resourceDir);
     }
@@ -177,6 +179,23 @@ class CfnApiArtifactHandler implements ApiArtifactHandler {
 
   private writeSchema = (resourceDir: string, schema: string): void => {
     fs.writeFileSync(resourceDir, schema);
+  };
+
+  /**
+   * For headless DataStore-disable, inject the sync fields before the
+   * transformer strips them. The interactive walkthrough has its own prompt
+   * for this and calls `preserveSyncFieldsOnDisable` directly.
+   */
+  private maybePreserveSyncFieldsOnDisable = async (updates: AppSyncServiceModification, resourceDir: string): Promise<void> => {
+    if (!this.context.input?.options?.headless) return;
+    if (!updates.conflictResolution) return;
+    const payloadRequestsDisable =
+      !updates.conflictResolution.defaultResolutionStrategy && _.isEmpty(updates.conflictResolution.perModelResolutionStrategy);
+    const priorTransformerConfig = await readTransformerConfiguration(resourceDir);
+    const priorlyEnabled = !_.isEmpty(priorTransformerConfig?.ResolverConfig);
+    if (payloadRequestsDisable && priorlyEnabled) {
+      await preserveSyncFieldsOnDisable(resourceDir);
+    }
   };
 
   private getResourceDir = (apiName: string): string => pathManager.getResourceDirectoryPath(undefined, category, apiName);
